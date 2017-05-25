@@ -6,7 +6,7 @@ from rellu.utils import git_commit, set_version, read_version, task
 
 assert Path.cwd() == Path(__file__).parent
 
-VERSION_FILE = Path('releasing/__init__.py')
+VERSION_FILE = Path('rellu/__init__.py')
 
 
 @task
