@@ -12,7 +12,7 @@ Requires Python 3 and invoke >= 0.13.
 import sys
 
 
-__version__ = '0.1'
+__version__ = '0.0.1'
 
 
 if sys.version_info < (3, 6):
