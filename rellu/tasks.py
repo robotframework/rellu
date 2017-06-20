@@ -32,13 +32,13 @@ def clean(ctx, remove_dist=True, create_dirs=False):
 
 
 @task
-def sdist(ctx, deploy=False, remove_dist=False):
+def sdist(ctx, upload=False, remove_dist=False):
     """Create source distribution.
 
     Args:
-        deploy:       Register and upload sdist to PyPI.
+        upload:       Upload distribution to PyPI.
         remove_dist:  Control is 'dist' directory initially removed or not.
     """
     clean(ctx, remove_dist, create_dirs=True)
-    run('python setup.py sdist' + (' register upload' if deploy else ''))
+    run('python setup.py sdist' + (' upload' if upload else ''))
     announce_dists()
