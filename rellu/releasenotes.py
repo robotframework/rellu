@@ -231,7 +231,7 @@ class PreviewMatcher:
 
     def __init__(self, preview):
         if preview not in self._preview_map:
-            raise ValueError(f'Invalid preview {preview!r}.')
+            raise ValueError(f'Invalid preview release {preview!r}.')
         pattern = self._preview_map[preview]
         self.match = re.compile(f'^{pattern}$').match
 
