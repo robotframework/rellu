@@ -14,6 +14,7 @@
 
 import os
 import shutil
+import sys
 from pathlib import Path
 
 from invoke import task
@@ -49,16 +50,24 @@ def clean(ctx, remove_dist=True, create_dirs=False):
 
 
 @task
-def dist(ctx, upload=False, remove_dist=False, dry_run=False):
+def dist(ctx, wheel=True, universal=True, upload=False, remove_dist=True,
+         dry_run=False):
     """Create source distribution.
 
     Args:
         upload:       Upload distribution to PyPI.
         remove_dist:  Control is 'dist' directory initially removed or not.
+        dry_run:      Just print commands to execute, don't run them.
     """
     clean(ctx, remove_dist, create_dirs=True)
-    # TODO: Use twine for uploading
-    run('python setup.py sdist' + (' upload' if upload else ''), dry_run=dry_run)
+    command = f'{sys.executable} setup.py sdist'
+    if wheel:
+        command += ' bdist_wheel'
+        if universal:
+            command += ' --universal'
+    run(command, dry_run=dry_run)
+    if upload:
+        run(f'{sys.executable} -m twine upload dist/*', dry_run=dry_run)
     _announce_dists()
 
 

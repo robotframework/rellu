@@ -1,2 +1,4 @@
 invoke>=0.20
-github
+wheel
+twine
+pygithub
