@@ -6,7 +6,7 @@ in its ecosystem, but they can be used by other projects too.
 Utilities use Invoke <http://pyinvoke.org> internally. Project specific
 BUILD.rst or similar ought to contain more details about releasing.
 
-Requires Python >= 3.6 and invoke >= 0.13.
+Requires Python >= 3.6 and invoke >= 0.20.
 """
 
 import sys
@@ -21,7 +21,13 @@ if sys.version_info < (3, 6):
 try:
     from invoke import __version_info__ as invoke_version
 
-    if invoke_version < (0, 13):
+    if invoke_version < (0, 20):
         raise ImportError
 except ImportError:
-    raise ImportError('invoke 0.13 or newer required.')
+    raise ImportError('invoke 0.20 or newer required.')
+
+
+from .git import git_commit, git_push, tag_release
+from .labels import initialize_labels
+from .releasenotes import ReleaseNotesGenerator
+from .version import get_version, set_version

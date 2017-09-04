@@ -1,12 +1,15 @@
 import re
 import sys
 import time
+from contextlib import contextmanager
 from functools import total_ordering
+from pathlib import Path
 
-from .utils import get_repository
+from .repo import get_repository
+from .version import Version
 
 
-class ReleaseNoteGenerator:
+class ReleaseNotesGenerator:
     pre_intro = '''
 .. default-role:: code
 '''
@@ -16,38 +19,35 @@ class ReleaseNoteGenerator:
    :local:
 '''.strip()
 
-    def __init__(self, repository, title, intro, default_targets=(),
-                 stream=sys.stdout):
+    def __init__(self, repository, title, intro, default_targets=()):
         self.repository = repository
         self.title = title
         self.intro = intro
         self.default_targets = default_targets
-        self.stream = stream
+        self._output = None
 
-    def generate(self, version, username=None, password=None):
+    def generate(self, version, username=None, password=None, file=sys.stdout):
         version = Version(version)
         issues = self._get_issues(version, username, password)
-        self._write_intro(version)
-        self._write_most_important_enhancements(issues, version)
-        self._write_backwards_incompatible_changes(issues, version)
-        self._write_deprecated_features(issues, version)
-        self._write_acknowledgements(issues)
-        self._write_issue_table(issues, version)
-        self._write_targets(issues)
+        with self._output_enabled(file, version):
+            self._write_intro(version)
+            self._write_most_important_enhancements(issues, version)
+            self._write_backwards_incompatible_changes(issues, version)
+            self._write_deprecated_features(issues, version)
+            self._write_acknowledgements(issues)
+            self._write_issue_table(issues, version)
+            self._write_targets(issues)
 
     def _get_issues(self, version, username=None, password=None):
         repository = get_repository(self.repository, username, password)
         issues = self._get_issues_in_milestone(repository, version)
-        if version.preview:
-            matcher = PreviewMatcher(version.preview)
-            issues = (i for i in issues if matcher.match_any(i.labels))
         return sorted(issues)
 
     def _get_issues_in_milestone(self, repository, version):
         milestone = self._get_milestone(repository, version)
         for data in repository.get_issues(milestone=milestone, state='all'):
             issue = Issue(data, repository.name)
-            if issue.include_in_release_notes:
+            if issue.include_in_release_notes and version.is_included(issue):
                 yield issue
 
     def _get_milestone(self, repository, version):
@@ -56,6 +56,22 @@ class ReleaseNoteGenerator:
                 return milestone
         raise ValueError(f"Milestone '{version.milestone}' not found from "
                          f"repository '{repository.name}'.")
+
+    @contextmanager
+    def _output_enabled(self, file, version):
+        if isinstance(file, (str, Path)):
+            self._output = open(str(file).format(version=version), 'w')
+            close = True
+        else:
+            self._output = file
+            close = False
+        try:
+            yield
+        finally:
+            if close:
+                print(self._output.name)
+                self._output.close()
+            self._output = None
 
     def _write_intro(self, version):
         self._write_header(self.title.format(version=version), level=1)
@@ -143,29 +159,14 @@ class ReleaseNoteGenerator:
         message += '\n' * newlines
         if link_issues:
             message = re.sub(r'(#\d+)', r'`\1`_', message)
-        self.stream.write(message)
-
-
-class Version(object):
-    match = re.compile(r'^(?P<milestone>\d+\.\d+(?:\.\d+)?)'
-                       r'(?P<preview>(?:a|b|rc|.dev)\d+)?$').match
-
-    def __init__(self, version):
-        match = self.match(version)
-        if not match:
-            raise ValueError(f'Invalid version {version!r}.')
-        self.version = version
-        self.milestone = match.group('milestone')
-        self.preview = match.group('preview')
-
-    def __str__(self):
-        return self.version
+        self._output.write(message)
 
 
 @total_ordering
 class Issue(object):
-    PRIORITIES = ['critical', 'high', 'medium', 'low', '']
-    TYPES = ['bug', 'enhancement', 'task']
+    NOT_SET = '---'
+    PRIORITIES = ['critical', 'high', 'medium', 'low', NOT_SET]
+    TYPES = ['bug', 'enhancement', 'task', NOT_SET]
 
     def __init__(self, issue, repository):
         self.id = f'#{issue.number}'
@@ -182,12 +183,14 @@ class Issue(object):
         for value in values:
             if value in self.labels:
                 return value
-        return ''
+        return self.NOT_SET
 
     def _get_priority(self):
         labels = ['prio-' + prio for prio in self.PRIORITIES if prio]
         priority = self._get_label(*labels)
-        return priority.split('-')[1] if priority else ''
+        if priority != self.NOT_SET:
+            priority = priority.split('-')[1]
+        return priority
 
     @property
     def preview(self):
@@ -214,26 +217,3 @@ class Issue(object):
 
     def __str__(self):
         return f'{self.id} {self.summary}'
-
-
-class PreviewMatcher:
-    _preview_map = {
-        'a1': 'alpha 1',
-        'a2': 'alpha [12]',
-        'a3': 'alpha [123]',
-        'b1': r'(alpha \d|beta 1)',
-        'b2': r'(alpha \d|beta [12])',
-        'b3': r'(alpha \d|beta [123])',
-        'rc1': r'(alpha \d|beta \d|rc 1)',
-        'rc2': r'(alpha \d|beta \d|rc [12])',
-        'rc3': r'(alpha \d|beta \d|rc [123])'
-    }
-
-    def __init__(self, preview):
-        if preview not in self._preview_map:
-            raise ValueError(f'Invalid preview release {preview!r}.')
-        pattern = self._preview_map[preview]
-        self.match = re.compile(f'^{pattern}$').match
-
-    def match_any(self, labels):
-        return any(self.match(label) for label in labels)

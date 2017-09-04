@@ -1,17 +1,20 @@
 from pathlib import Path
+import sys
 
-from rellu.tasks import clean
-from rellu.utils import (git_commit, initialize_labels, set_version,
-                         read_version, task)
-from rellu.releasenotes import ReleaseNoteGenerator
+from invoke import task
+
+from rellu.tasks import clean, dist
+from rellu import git_commit, initialize_labels, set_version, get_version
+from rellu.releasenotes import ReleaseNotesGenerator
 
 
 assert Path.cwd() == Path(__file__).parent
 
-VERSION_FILE = Path('rellu/__init__.py')
 REPOSITORY = 'robotframework/rellu'
-RELASE_NOTES_TITLE = 'Rellu {version}'
-RELASE_NOTES_INTRO = '''
+VERSION_FILE = Path('rellu/__init__.py')
+RELEASE_NOTES_FILE = Path('doc/rellu-{version}.rst')
+RELEASE_NOTES_TITLE = 'Rellu {version}'
+RELEASE_NOTES_INTRO = '''
 Rellu {version} is a new release with **UPDATE** enhancements and bug
 fixes. **MORE intro stuff...**
 
@@ -40,8 +43,7 @@ def version(ctx, number, push=False):
 
 @task
 def print_version(ctx):
-    number = read_version(VERSION_FILE)
-    print(f'Current version is {number!r}.')
+    print(get_version(VERSION_FILE))
 
 
 @task
@@ -50,9 +52,10 @@ def initialize(ctx, username=None, password=None):
 
 
 @task
-def release_notes(ctx, version=None, username=None, password=None):
-    generator = ReleaseNoteGenerator(REPOSITORY, RELASE_NOTES_TITLE,
-                                     RELASE_NOTES_INTRO)
+def release_notes(ctx, version=None, username=None, password=None, write=False):
     if not version:
-        version = read_version(VERSION_FILE)
-    generator.generate(version, username, password)
+        version = get_version(VERSION_FILE)
+    file = RELEASE_NOTES_FILE if write else sys.stdout
+    generator = ReleaseNotesGenerator(REPOSITORY, RELEASE_NOTES_TITLE,
+                                      RELEASE_NOTES_INTRO)
+    generator.generate(version, username, password, file)

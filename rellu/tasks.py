@@ -1,9 +1,8 @@
 import os
 import shutil
+from pathlib import Path
 
 from invoke import task, run
-
-from .utils import announce_dists
 
 
 @task
@@ -42,5 +41,13 @@ def dist(ctx, upload=False, remove_dist=False):
         remove_dist:  Control is 'dist' directory initially removed or not.
     """
     clean(ctx, remove_dist, create_dirs=True)
+    # TODO: Use twine for uploading
     run('python setup.py sdist' + (' upload' if upload else ''))
-    announce_dists()
+    _announce_dists()
+
+
+def _announce_dists():
+    print()
+    print('Distributions:')
+    for path in Path('dist').iterdir():
+        print(path)
