@@ -5,41 +5,6 @@ import time
 VERSION_PATTERN = "__version__ = '(.*)'"
 
 
-def get_version(version_file, pattern=VERSION_PATTERN):
-    return Version.from_file(version_file, pattern)
-
-
-def set_version(version, path, pattern=VERSION_PATTERN):
-    """Set version in the specified version file.
-
-    TODO: Doc update
-
-    Version can have these values:
-    - Actual version number to use. See below for supported formats.
-    - String 'dev' to update version to latest development version
-      (e.g. 2.8 -> 2.8.1.dev, 2.8.1 -> 2.8.2.dev, 2.8a1 -> 2.8.dev) with
-      the current date added or updated.
-
-    Given version must be in one of these PEP-440 compatible formats:
-    - Stable version in 'X.Y' or 'X.Y.Z' format (e.g. 2.8, 2.8.6)
-    - Pre-releases with 'aN', 'bN' or 'rcN' postfix (e.g. 2.8a1, 2.8.6rc2)
-    - Development releases with '.devYYYYMMDD' postfix (e.g. 2.8.6.dev20141001)
-      or with '.dev' alone (e.g. 2.8.6.dev) in which case date is added
-      automatically.
-
-    Args:
-        version:  Version to use. See above for supported values and formats.
-        path:     Path to the file containing version information.
-        pattern:  Pattern specifying how version is set.
-    """
-    if version == 'dev':
-        version = Version.from_file(path, pattern).get_dev_version()
-    else:
-        version = Version(version)
-    version.write(path, pattern)
-    return version
-
-
 class Version(object):
     """Class representing versions in PEP-440 compatible format."""
     match = re.compile(r'^(?P<number>\d+\.\d+(\.\d+)?)'
@@ -62,7 +27,32 @@ class Version(object):
         'rc5': r'(alpha [12345]|beta [12345]|rc [12345])'
     }
 
-    def __init__(self, version):
+    def __init__(self, version=None, path=None, pattern=VERSION_PATTERN):
+        """Initialize based on given version of by version read from file.
+
+        :param version: Version to use. If not given, version is read from file.
+        :param path: File were version if read if not explicitly given.
+            Also used by :meth:`write`.
+        :param pattern: Pattern to use when reading/writing version information.
+
+        Version can have these values:
+        - No value. Version is read from file.
+        - Actual version number to use. See below for supported formats.
+        - String 'dev' to read the version from file and to update it to
+          latest development version (e.g. 3.0 -> 3.0.1.dev, 3.1.1 -> 3.1.2.dev,
+          3.2a1 -> 3.2.dev) with the current date added to the end.
+
+        Given version number must be in one of these PEP-440 compatible formats:
+        - Stable version in 'X.Y' or 'X.Y.Z' format (e.g. 3.0, 3.2.1)
+        - Pre-releases with 'aN', 'bN' or 'rcN' postfix (e.g. 3.0a1, 3.1.1rc2)
+        - Development releases with '.devYYYYMMDD' postfix (e.g.
+          3.2.1.dev20170904) or with '.dev' alone (e.g. 3.2.1.dev) in which
+          case the current date is added automatically.
+        """
+        if not version:
+            version = Version.from_file(path, pattern).version
+        if version == 'dev':
+            version = self._get_dev_version(path, pattern)
         if version.endswith('.dev'):
             version += time.strftime('%Y%m%d')
         match = self.match(version)
@@ -72,27 +62,22 @@ class Version(object):
         self.milestone = 'v' + match.group('number')
         self.preview = match.group('pre')
         self.dev = match.group('dev')
+        self.path = path
+        self.pattern = pattern
 
     @classmethod
-    def from_file(cls, version_file, pattern=VERSION_PATTERN):
-        with open(version_file) as file:
+    def from_file(cls, path, pattern=VERSION_PATTERN):
+        with open(path) as file:
             content = file.read()
         match = re.search(pattern, content)
-        return Version(match.group(1))
+        return Version(match.group(1), path, pattern)
 
-    def is_included(self, issue):
-        if issue.milestone != self.milestone:
-            return False
-        if not self.preview:
-            return True
-        pattern = self.preview_map[self.preview]
-        return bool(re.match(f'^{pattern}$', issue.preview))
-
-    def get_dev_version(self):
-        number = self.milestone[1:]
-        if not self.dev:
+    def _get_dev_version(self, path, pattern):
+        version = Version.from_file(path, pattern)
+        number = version.milestone[1:]
+        if not version.dev:
             number = self._bump_version(number)
-        return Version(number + '.dev')
+        return number + '.dev'
 
     def _bump_version(self, number):
         tokens = number.split('.')
@@ -102,11 +87,19 @@ class Version(object):
             tokens[2] = str(int(tokens[2]) + 1)
         return '.'.join(tokens)
 
-    def write(self, path, pattern=VERSION_PATTERN):
-        replacement = pattern.replace('(.*)', self.version)
-        with open(path) as file:
-            content = re.sub(pattern, replacement, file.read())
-        with open(path, 'w') as file:
+    def is_included(self, issue):
+        if issue.milestone != self.milestone:
+            return False
+        if not self.preview:
+            return True
+        pattern = self.preview_map[self.preview]
+        return bool(re.match(f'^{pattern}$', issue.preview))
+
+    def write(self):
+        replacement = self.pattern.replace('(.*)', self.version)
+        with open(self.path) as file:
+            content = re.sub(self.pattern, replacement, file.read())
+        with open(self.path, 'w') as file:
             file.write(content)
 
     def __str__(self):

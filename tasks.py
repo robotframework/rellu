@@ -4,7 +4,7 @@ import sys
 from invoke import task
 
 from rellu.tasks import clean, dist
-from rellu import git_commit, git_tag, get_version, initialize_labels, set_version
+from rellu import git_commit, git_tag, initialize_labels, Version
 from rellu.releasenotes import ReleaseNotesGenerator
 
 
@@ -34,16 +34,18 @@ Rellu {version} was released on {date}.
 
 
 @task
-def version(ctx, number, push=False):
-    number = set_version(number, path=VERSION_FILE)
-    print(f'Version set to {number}.')
+def set_version(ctx, version, push=False, dry_run=False):
+    version = Version(version, VERSION_FILE)
+    version.write()
+    print(version)
     if push:
-        git_commit(VERSION_FILE, f'Updated version to {number}', push=True)
+        git_commit(VERSION_FILE, f'Updated version to {version}',
+                   push=True, dry_run=dry_run)
 
 
 @task
 def print_version(ctx):
-    print(get_version(VERSION_FILE))
+    print(Version(path=VERSION_FILE))
 
 
 @task
@@ -53,8 +55,7 @@ def initialize(ctx, username=None, password=None):
 
 @task
 def release_notes(ctx, version=None, username=None, password=None, write=False):
-    if not version:
-        version = get_version(VERSION_FILE)
+    version = Version(version, VERSION_FILE)
     file = RELEASE_NOTES_FILE if write else sys.stdout
     generator = ReleaseNotesGenerator(REPOSITORY, RELEASE_NOTES_TITLE,
                                       RELEASE_NOTES_INTRO)
@@ -63,7 +64,7 @@ def release_notes(ctx, version=None, username=None, password=None, write=False):
 
 @task
 def tag_release(ctx, upstream=False, dry_run=False):
-    version = get_version(VERSION_FILE)
+    version = Version(path=VERSION_FILE)
     if version.dev:
         print(f'Cannot tag dev version {version}.')
     else:

@@ -6,7 +6,6 @@ from functools import total_ordering
 from pathlib import Path
 
 from .repo import get_repository
-from .version import Version
 
 
 class ReleaseNotesGenerator:
@@ -27,7 +26,9 @@ class ReleaseNotesGenerator:
         self._output = None
 
     def generate(self, version, username=None, password=None, file=sys.stdout):
-        version = Version(version)
+        if version.dev:
+            raise ValueError('Cannot create release notes for development '
+                             f'version {version}.')
         issues = self._get_issues(version, username, password)
         with self._output_enabled(file, version):
             self._write_intro(version)
