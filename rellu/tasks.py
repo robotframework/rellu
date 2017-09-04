@@ -18,7 +18,7 @@ from pathlib import Path
 
 from invoke import task
 
-from .utils import run
+from .run import run
 
 
 @task

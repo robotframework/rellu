@@ -14,7 +14,7 @@
 
 from pathlib import Path
 
-from .utils import run
+from .run import run
 
 
 def git_commit(paths, message, push=False, upstream=False, dry_run=False):

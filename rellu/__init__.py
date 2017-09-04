@@ -44,5 +44,5 @@ except ImportError:
 from .git import git_commit, git_push, git_tag
 from .labels import initialize_labels
 from .releasenotes import ReleaseNotesGenerator
+from .run import run
 from .version import Version
-from .utils import run
