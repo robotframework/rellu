@@ -47,7 +47,7 @@ class ReleaseNotesGenerator:
         milestone = self._get_milestone(repository, version)
         for data in repository.get_issues(milestone=milestone, state='all'):
             issue = Issue(data, repository.name)
-            if issue.include_in_release_notes and version.is_included(issue):
+            if issue.included_in_release_notes(version):
                 yield issue
 
     def _get_milestone(self, repository, version):
@@ -170,38 +170,37 @@ class Issue(object):
 
     def __init__(self, issue, repository):
         self.id = f'#{issue.number}'
+        self.milestone = issue.milestone.title
         self.summary = issue.title
         self.labels = [label.name for label in issue.get_labels()]
-        self.type = self._get_type()
-        self.priority = self._get_priority()
         self.url = f'https://github.com/{repository}/issues/{issue.number}'
-
-    def _get_type(self):
-        return self._get_label(*self.TYPES)
-
-    def _get_label(self, *values):
-        for value in values:
-            if value in self.labels:
-                return value
-        return self.NOT_SET
-
-    def _get_priority(self):
-        labels = ['prio-' + prio for prio in self.PRIORITIES if prio]
-        priority = self._get_label(*labels)
-        if priority != self.NOT_SET:
-            priority = priority.split('-')[1]
-        return priority
 
     @property
     def preview(self):
         for label in self.labels:
             if label.startswith(('alpha ', 'beta ', 'rc ')):
                 return label
-        return ''
+        return None
 
     @property
-    def include_in_release_notes(self):
-        return self.type != 'task'
+    def type(self):
+        for label in self.labels:
+            if label in self.TYPES:
+                return label
+        return self.NOT_SET
+
+    @property
+    def priority(self):
+        priorities = ['prio-' + prio for prio in self.PRIORITIES]
+        for label in self.labels:
+            if label in priorities:
+                return label.split('-')[1]
+        return self.NOT_SET
+
+    def included_in_release_notes(self, version):
+        if self.type == 'task':
+            return False
+        return version.is_included(self)
 
     @property
     def sort_key(self):

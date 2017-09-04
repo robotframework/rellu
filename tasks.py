@@ -36,7 +36,7 @@ Rellu {version} was released on {date}.
 @task
 def version(ctx, number, push=False):
     number = set_version(number, path=VERSION_FILE)
-    print(f'Version set to {number!r}.')
+    print(f'Version set to {number}.')
     if push:
         git_commit(VERSION_FILE, f'Updated version to {number}', push=True)
 
