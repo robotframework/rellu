@@ -34,13 +34,13 @@ Rellu {version} was released on {date}.
 
 
 @task
-def set_version(ctx, version, push=False, dry_run=False):
+def set_version(ctx, version, push=False, upstream=False, dry_run=False):
     version = Version(version, VERSION_FILE)
     version.write()
     print(version)
     if push:
         git_commit(VERSION_FILE, f'Updated version to {version}',
-                   push=True, dry_run=dry_run)
+                   push=True, upstream=upstream, dry_run=dry_run)
 
 
 @task

@@ -26,7 +26,7 @@ def git_commit(paths, message, push=False, upstream=False, dry_run=False):
 
 
 def git_push(tags=False, upstream=False, dry_run=False):
-    command = 'git push' + ' --tags' if tags else ''
+    command = 'git push' + (' --tags' if tags else '')
     run(command, dry_run=dry_run)
     if upstream:
         run(command + ' upstream', dry_run=dry_run)
