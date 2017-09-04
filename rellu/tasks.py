@@ -2,7 +2,10 @@ import os
 import shutil
 from pathlib import Path
 
-from invoke import task, run
+from invoke import task
+
+from .git import git_push
+from .utils import run
 
 
 @task
@@ -33,7 +36,7 @@ def clean(ctx, remove_dist=True, create_dirs=False):
 
 
 @task
-def dist(ctx, upload=False, remove_dist=False):
+def dist(ctx, upload=False, remove_dist=False, dry_run=False):
     """Create source distribution.
 
     Args:
@@ -42,7 +45,7 @@ def dist(ctx, upload=False, remove_dist=False):
     """
     clean(ctx, remove_dist, create_dirs=True)
     # TODO: Use twine for uploading
-    run('python setup.py sdist' + (' upload' if upload else ''))
+    run('python setup.py sdist' + (' upload' if upload else ''), dry_run=dry_run)
     _announce_dists()
 
 

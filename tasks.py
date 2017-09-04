@@ -4,7 +4,7 @@ import sys
 from invoke import task
 
 from rellu.tasks import clean, dist
-from rellu import git_commit, initialize_labels, set_version, get_version
+from rellu import git_commit, git_tag, get_version, initialize_labels, set_version
 from rellu.releasenotes import ReleaseNotesGenerator
 
 
@@ -59,3 +59,12 @@ def release_notes(ctx, version=None, username=None, password=None, write=False):
     generator = ReleaseNotesGenerator(REPOSITORY, RELEASE_NOTES_TITLE,
                                       RELEASE_NOTES_INTRO)
     generator.generate(version, username, password, file)
+
+
+@task
+def tag_release(ctx, upstream=False, dry_run=False):
+    version = get_version(VERSION_FILE)
+    if version.dev:
+        print(f'Cannot tag dev version {version}.')
+    else:
+        git_tag(version, upstream=upstream, dry_run=dry_run)
