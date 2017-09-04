@@ -2,24 +2,32 @@ Creating ``rellu`` releases
 ===========================
 
 These instructions cover steps needed to create new releases of the ``rellu``
-tool. Most individual steps are automated, but we do not want to automate
+tool. Many individual steps are automated, but we do not want to automate
 the whole procedure because it would be hard to react if something goes
 terribly wrong. When applicable, the steps are listed as commands that can
 be copied and executed on the command line.
 
 .. contents::
+   :depth: 1
 
 Preconditions
 -------------
 
-Most tasks are automated using `Invoke <http://pyinvoke.org>`_ tasks that
-are defined in `<tasks.py>`_ file. A pre-condition is installing Invoke
-and other tools used by tasks. This is easiest done using `pip
-<http://pip-installer.org>`_ and the `<requirements.txt>`_ file::
+Installations
+~~~~~~~~~~~~~
+
+Many steps are automated using `Invoke <http://pyinvoke.org>`_ and also
+`twine <https://pypi.python.org/pypi/twine>`_ other tools are needed.
+A pre-condition is installing all these tools and that's easiest done
+using `pip <http://pip-installer.org>`_ and the `<requirements.txt>`_ file::
 
     pip install -r requirements.txt
 
-Invoke is executed from the command line like::
+Using Invoke
+~~~~~~~~~~~~
+
+Invoke tasks are defined in `<tasks.py>`_ file and they are executed from
+the command line like::
 
     inv[oke] task [options]
 
@@ -113,7 +121,7 @@ Creating distributions
 
       invoke clean
 
-3. Create source distribution and wheel::
+3. Create source distribution and `wheel <http://pythonwheels.com>`_::
 
       python3 setup.py sdist bdist_wheel
 
@@ -132,14 +140,16 @@ Creating distributions
 Post actions
 ------------
 
-1. Set dev version based on the previous version. For example, ``3.2.1``
-   is changed to ``3.2.2.dev`` with the current date appended.
+1. Set dev version based on the previous version::
 
       invoke set-version dev
       git commit -m "Back to dev version" rellu/__init__.py
       git push
 
-2. Close `issue tracker milestone
+   For example, ``3.2.1`` is changed to ``3.2.2.dev`` with the current date
+   appended.
+
+2. Close the `issue tracker milestone
    <https://github.com/robotframework/rellu/milestones>`__.
 
 Announcements
