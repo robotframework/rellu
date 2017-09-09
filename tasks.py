@@ -11,8 +11,8 @@ from rellu.releasenotes import ReleaseNotesGenerator
 assert Path.cwd() == Path(__file__).parent
 
 REPOSITORY = 'robotframework/rellu'
-VERSION_FILE = Path('rellu/__init__.py')
-RELEASE_NOTES_FILE = Path('doc/rellu-{version}.rst')
+VERSION_PATH = Path('rellu/__init__.py')
+RELEASE_NOTES_PATH = Path('doc/rellu-{version}.rst')
 RELEASE_NOTES_TITLE = 'Rellu {version}'
 RELEASE_NOTES_INTRO = '''
 Rellu {version} is a new release with **UPDATE** enhancements and bug
@@ -35,14 +35,14 @@ Rellu {version} was released on {date}.
 
 @task
 def set_version(ctx, version):
-    version = Version(version, VERSION_FILE)
+    version = Version(version, VERSION_PATH)
     version.write()
     print(version)
 
 
 @task
 def print_version(ctx):
-    print(Version(path=VERSION_FILE))
+    print(Version(path=VERSION_PATH))
 
 
 @task
@@ -52,8 +52,8 @@ def initialize(ctx, username=None, password=None):
 
 @task
 def release_notes(ctx, version=None, username=None, password=None, write=False):
-    version = Version(version, VERSION_FILE)
-    file = RELEASE_NOTES_FILE if write else sys.stdout
+    version = Version(version, VERSION_PATH)
+    file = RELEASE_NOTES_PATH if write else sys.stdout
     generator = ReleaseNotesGenerator(REPOSITORY, RELEASE_NOTES_TITLE,
                                       RELEASE_NOTES_INTRO)
     generator.generate(version, username, password, file)
