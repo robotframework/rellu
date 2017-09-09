@@ -3,7 +3,7 @@ import sys
 
 from invoke import task
 
-from rellu.tasks import clean, dist
+from rellu.tasks import clean
 from rellu import initialize_labels, Version
 from rellu.releasenotes import ReleaseNotesGenerator
 
