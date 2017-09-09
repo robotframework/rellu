@@ -19,6 +19,8 @@ from contextlib import contextmanager
 from functools import total_ordering
 from pathlib import Path
 
+from invoke import Exit
+
 from .repo import get_repository
 
 
@@ -41,8 +43,8 @@ class ReleaseNotesGenerator:
 
     def generate(self, version, username=None, password=None, file=sys.stdout):
         if version.dev:
-            raise ValueError('Cannot create release notes for development '
-                             f'version {version}.')
+            raise Exit(f'Cannot create release notes for development '
+                       f"version '{version}'.")
         issues = self._get_issues(version, username, password)
         with self._output_enabled(file, version):
             self._write_intro(version)
@@ -69,8 +71,8 @@ class ReleaseNotesGenerator:
         for milestone in repository.get_milestones(state='all'):
             if milestone.title == version.milestone:
                 return milestone
-        raise ValueError(f"Milestone '{version.milestone}' not found from "
-                         f"repository '{repository.name}'.")
+        raise Exit(f"Milestone '{version.milestone}' not found from "
+                   f"repository '{repository.name}'.")
 
     @contextmanager
     def _output_enabled(self, file, version):

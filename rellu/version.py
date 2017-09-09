@@ -15,6 +15,8 @@
 import re
 import time
 
+from invoke import Exit
+
 
 VERSION_PATTERN = "__version__ = '(.*)'"
 
@@ -71,7 +73,7 @@ class Version(object):
             version += time.strftime('%Y%m%d')
         match = self.match(version)
         if not match:
-            raise ValueError(f'Invalid version {version!r}.')
+            raise Exit(f'Invalid version {version!r}.')
         self.version = version
         self.milestone = 'v' + match.group('number')
         self.preview = match.group('pre')
