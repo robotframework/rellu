@@ -27,6 +27,7 @@ with open(join(CURDIR, 'requirements.txt')) as requirements:
 setup(
     name             = NAME,
     version          = VERSION,
+    packages         = [NAME],
     author           = 'Pekka Klärck and contributors',
     author_email     = 'robotframework@gmail.com',
     url              = 'https://github.com/robotframework/rellu',
