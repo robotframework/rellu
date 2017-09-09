@@ -2,7 +2,7 @@ Creating ``rellu`` releases
 ===========================
 
 These instructions cover steps needed to create new releases of the ``rellu``
-tool. Many individual steps are automated, but we do not want to automate
+tool. Many individual steps are automated, but we don't want to automate
 the whole procedure because it would be hard to react if something goes
 terribly wrong. When applicable, the steps are listed as commands that can
 be copied and executed on the command line.
@@ -16,10 +16,16 @@ Preconditions
 Installations
 ~~~~~~~~~~~~~
 
+Creating releases is only supported with Python 3.6 or newer and it must thus
+be installed. The ``pip`` and ``invoke`` commands below are expected to run
+on Python 3.6+ too. Alternatively it's possible to use the ``python3.6 -m pip``
+approach to run these commands.
+
 Many steps are automated using `Invoke <http://pyinvoke.org>`_ and also
-`twine <https://pypi.python.org/pypi/twine>`_ other tools are needed.
-A pre-condition is installing all these tools and that's easiest done
-using `pip <http://pip-installer.org>`_ and the `<requirements.txt>`_ file::
+other tools/modules such as `twine <https://pypi.python.org/pypi/twine>`_
+are needed. A pre-condition is installing all these tools, and that's easiest
+done using `pip <http://pip-installer.org>`_ and the `<requirements.txt>`_
+file::
 
     pip install -r requirements.txt
 
@@ -77,7 +83,7 @@ Release notes
    (e.g. ``rc1``) or with a label of an earlier preview release (e.g.
    ``alpha1``, ``beta2``).
 
-2. Fill the missing details in the template.
+2. Fill the missing details in the generated release notes template.
 
 3. Add, commit and push::
 
@@ -87,7 +93,9 @@ Release notes
 
 4. Add short release notes to GitHub's `releases page
    <https://github.com/robotframework/rellu/releases>`_
-   with a link to the full release notes.
+   with a link to the full release notes. This can be also done
+   after tagging_ when the aforementioned page already has the
+   related tag.
 
 Set version
 -----------
@@ -125,7 +133,7 @@ Creating distributions
 
       python3 setup.py sdist bdist_wheel
 
-   Test distributions locally if necessary.
+   Distributions can be tested locally if needed.
 
 4. Upload to PyPI::
 

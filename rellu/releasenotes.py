@@ -94,7 +94,7 @@ class ReleaseNotesGenerator:
         self._write_header(self.title.format(version=version), level=1)
         intro = self.intro.format(version=version,
                                   date=time.strftime('%A %B %-d, %Y'))
-        self._write(self.pre_intro, newlines=2)
+        self._write(self.pre_intro)
         self._write(intro, newlines=2)
         self._write(self.post_intro)
 
