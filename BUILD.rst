@@ -114,7 +114,7 @@ Tagging
 
 Create an annotated tag and push it::
 
-   git tag -a "v$VERSION" -m "Release $VERSION"
+   git tag -a v$VERSION -m "Release $VERSION"
    git push --tags
 
 Creating distributions
@@ -137,9 +137,11 @@ Creating distributions
 
 4. Upload to PyPI::
 
+      ls -l dist
       twine upload dist/*
 
-5. Verify that https://pypi.python.org/pypi/rellu looks good.
+5. Verify that project page at `PyPI <https://pypi.python.org/pypi/rellu>`_
+   looks good.
 
 6. Test installation (add ``--pre`` with pre-releases)::
 
@@ -148,7 +150,11 @@ Creating distributions
 Post actions
 ------------
 
-1. Set dev version based on the previous version::
+1. Back to master if needed::
+
+      git checkout master
+
+2. Set dev version based on the previous version::
 
       invoke set-version dev
       git commit -m "Back to dev version" rellu/__init__.py
@@ -157,7 +163,7 @@ Post actions
    For example, ``3.2.1`` is changed to ``3.2.2.dev`` with the current date
    appended.
 
-2. Close the `issue tracker milestone
+3. Close the `issue tracker milestone
    <https://github.com/robotframework/rellu/milestones>`__.
 
 Announcements
