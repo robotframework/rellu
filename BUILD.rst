@@ -130,12 +130,12 @@ Creating distributions
 3. Create source distribution and `wheel <http://pythonwheels.com>`_::
 
       python3 setup.py sdist bdist_wheel
+      ls -l dist
 
    Distributions can be tested locally if needed.
 
 4. Upload to PyPI::
 
-      ls -l dist
       twine upload dist/*
 
 5. Verify that project page at `PyPI <https://pypi.python.org/pypi/rellu>`_
