@@ -1,0 +1,3 @@
+wheel
+twine
+-r requirements.txt
