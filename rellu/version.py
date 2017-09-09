@@ -108,6 +108,8 @@ class Version(object):
             return False
         if not self.preview:
             return True
+        if not issue.preview:
+            return False
         pattern = self.preview_map[self.preview]
         return bool(re.match(f'^{pattern}$', issue.preview))
 
