@@ -8,7 +8,7 @@ from setuptools import setup
 
 NAME = 'rellu'
 CLASSIFIERS = '''
-Development Status :: 3 - Alpha
+Development Status :: 4 - Beta
 License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python :: 3.6
