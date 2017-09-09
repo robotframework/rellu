@@ -91,12 +91,6 @@ Release notes
       git commit -m "Release notes for $VERSION" doc/rellu-$VERSION.rst
       git push
 
-4. Add short release notes to GitHub's `releases page
-   <https://github.com/robotframework/rellu/releases>`_
-   with a link to the full release notes. This can be also done
-   after tagging_ when the aforementioned page already has the
-   related tag.
-
 Set version
 -----------
 
@@ -112,10 +106,14 @@ Set version
 Tagging
 -------
 
-Create an annotated tag and push it::
+1. Create an annotated tag and push it::
 
-   git tag -a v$VERSION -m "Release $VERSION"
-   git push --tags
+      git tag -a v$VERSION -m "Release $VERSION"
+      git push --tags
+
+2. Add short release notes to GitHub's `releases page
+   <https://github.com/robotframework/rellu/releases>`_
+   with a link to the full release notes.
 
 Creating distributions
 ----------------------
