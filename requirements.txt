@@ -1,4 +1,4 @@
 invoke>=0.20
 wheel
 twine
-pygithub
+PyGithub
