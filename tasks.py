@@ -4,8 +4,7 @@ import sys
 from invoke import task
 
 from rellu.tasks import clean
-from rellu import initialize_labels, Version
-from rellu.releasenotes import ReleaseNotesGenerator
+from rellu import initialize_labels, Version, ReleaseNotesGenerator
 
 
 assert Path.cwd() == Path(__file__).parent
