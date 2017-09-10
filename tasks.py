@@ -14,21 +14,36 @@ VERSION_PATH = Path('rellu/__init__.py')
 RELEASE_NOTES_PATH = Path('doc/rellu-{version}.rst')
 RELEASE_NOTES_TITLE = 'Rellu {version}'
 RELEASE_NOTES_INTRO = '''
-Rellu {version} is a new release with **UPDATE** enhancements and bug
-fixes. **MORE intro stuff...**
+Rellu provides utilities to ease creating releases.
+Rellu {version} is a new release with
+**UPDATE** enhancements and bug fixes. **ADD more intro stuff...**
 
-**REMOVE reference to tracker if release notes contain all issues.**
-All issues targeted for Rellu {version.milestone} can be found from the `issue tracker
-<https://github.com/robotframework/rellu/issues?q=milestone%3A{version.milestone}>`_.
+**REMOVE this section with final releases or if release notes contain
+all issues otherwise.**
+All issues targeted for Rellu {version.milestone} can be found from the
+`issue tracker`_.
 
-**ADD --pre with preview releases.**
-If you have `pip <http://pip-installer.org>`_ installed, just run
-`pip install --upgrade rellu` to install the latest release or use
-`pip install rellu=={version}` to install exactly this version.
-Alternatively you can download the source distribution from
-`PyPI <https://pypi.python.org/pypi/rellu>`_ and install it manually.
+**REMOVE ``--pre`` from the next command with final releases.**
+If you have pip_ installed, just run
+
+::
+
+   pip install --pre --upgrade rellu
+
+to install the latest available release or use
+
+::
+
+   pip install rellu=={version}
+
+to install exactly this version. Alternatively you can download the source
+distribution from PyPI_ and install it manually.
 
 Rellu {version} was released on {date}.
+
+.. _Issue tracker: https://github.com/robotframework/rellu/issues?q=milestone%3A{version.milestone}
+.. _pip: http://pip-installer.org
+.. _PyPI: https://pypi.python.org/pypi/rellu
 '''
 
 
