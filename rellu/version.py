@@ -24,7 +24,7 @@ VERSION_PATTERN = "__version__ = '(.*)'"
 class Version(object):
     """Class representing versions in PEP-440 compatible format."""
     match = re.compile(r'^(?P<number>\d+\.\d+(\.\d+)?)'
-                       r'((?P<pre>(a|b|rc)[12345])|(?P<dev>.dev\d+))?$').match
+                       r'(?P<pre>(a|b|rc)[12345])?(?P<dev>.dev\d+)?$').match
     preview_map = {
         'a1':  r'alpha 1',
         'a2':  r'alpha [12]',
@@ -67,19 +67,22 @@ class Version(object):
         """
         if not version:
             version = Version.from_file(path, pattern).version
-        if version == 'dev':
-            version = self._get_dev_version(path, pattern)
-        if version.endswith('.dev'):
+        elif version == 'dev':
+            version = Version.from_file(path, pattern).to_dev().version
+        elif version.endswith('.dev'):
             version += time.strftime('%Y%m%d')
         match = self.match(version)
         if not match:
             raise Exit(f'Invalid version {version!r}.')
-        self.version = version
         self.milestone = 'v' + match.group('number')
         self.preview = match.group('pre')
         self.dev = match.group('dev')
         self.path = path
         self.pattern = pattern
+
+    @property
+    def version(self):
+        return self.milestone[1:] + (self.preview or '') + (self.dev or '')
 
     @classmethod
     def from_file(cls, path, pattern=VERSION_PATTERN):
@@ -88,20 +91,25 @@ class Version(object):
         match = re.search(pattern, content)
         return Version(match.group(1), path, pattern)
 
-    def _get_dev_version(self, path, pattern):
-        version = Version.from_file(path, pattern)
-        number = version.milestone[1:]
-        if not version.dev:
-            number = self._bump_version(number)
-        return number + '.dev'
+    def to_dev(self, number=None):
+        if not self.dev:
+            if not self.preview:
+                self._increment_milestone()
+            else:
+                self._increment_preview()
+        self.dev = '.dev' + (number or time.strftime('%Y%m%d'))
+        return self
 
-    def _bump_version(self, number):
-        tokens = number.split('.')
+    def _increment_milestone(self):
+        tokens = self.milestone[1:].split('.')
         if len(tokens) == 2:
             tokens.append('1')
         else:
             tokens[2] = str(int(tokens[2]) + 1)
-        return '.'.join(tokens)
+        self.milestone = 'v' + '.'.join(tokens)
+
+    def _increment_preview(self):
+        self.preview = self.preview[:-1] + str(int(self.preview[-1]) + 1)
 
     def is_included(self, issue):
         if issue.milestone != self.milestone:

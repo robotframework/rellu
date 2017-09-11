@@ -7,28 +7,42 @@ from rellu.version import Version
 
 def test_version():
     for milestone in ('1.0', '10.9.2017'):
-        version = Version(milestone)
-        assert version.version == milestone
-        assert version.milestone == 'v' + milestone
-        assert version.preview is None
-        assert version.dev is None
-        for preview in ('a1', 'b2', 'rc3'):
-            version = Version(milestone + preview)
-            assert version.version == milestone + preview
-            assert version.milestone == 'v' + milestone
-            assert version.preview == preview
-            assert version.dev is None
-        version = Version(milestone + '.dev1')
-        assert version.version == milestone + '.dev1'
-        assert version.milestone == 'v' + milestone
-        assert version.preview is None
-        assert version.dev == '.dev1'
+        for preview in (None, 'a1', 'b2', 'rc3'):
+            version = milestone + (preview or '')
+            v = Version(version)
+            assert v.version == version
+            assert v.milestone == 'v' + milestone
+            assert v.preview == preview
+            assert v.dev is None
+            v = Version(version + '.dev1')
+            assert v.version == version + '.dev1'
+            assert v.milestone == 'v' + milestone
+            assert v.preview == preview
+            assert v.dev == '.dev1'
 
 
 def test_invalid_version():
     for invalid in ('invalid', '1', '1.x', '1.0beta1', '1.0b'):
         with pytest.raises(Exit):
             Version(invalid)
+
+
+def test_to_dev():
+    v = Version('1.0').to_dev('1')
+    assert v.version == '1.0.1.dev1'
+    assert v.milestone == 'v1.0.1'
+    assert v.preview is None
+    assert v.dev == '.dev1'
+    v = Version('1.0a1').to_dev('2')
+    assert v.version == '1.0a2.dev2'
+    assert v.milestone == 'v1.0'
+    assert v.preview == 'a2'
+    assert v.dev == '.dev2'
+    v = Version('1.0a1.dev1').to_dev('2')
+    assert v.version == '1.0a1.dev2'
+    assert v.milestone == 'v1.0'
+    assert v.preview == 'a1'
+    assert v.dev == '.dev2'
 
 
 def test_is_included():
@@ -59,7 +73,7 @@ def test_is_included():
 
 
 class IssueStub:
-    
+
     def __init__(self, milestone, preview):
         self.milestone = milestone
         self.preview = preview
