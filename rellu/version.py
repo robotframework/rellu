@@ -23,7 +23,7 @@ VERSION_PATTERN = "__version__ = '(.*)'"
 
 class Version(object):
     """Class representing versions in PEP-440 compatible format."""
-    match = re.compile(r'^(?P<number>\d+\.\d+(\.\d+)?)'
+    match = re.compile(r'^(?P<release>\d+\.\d+(\.\d+)?)'
                        r'(?P<pre>(a|b|rc)[12345])?(?P<dev>.dev\d+)?$').match
     preview_map = {
         'a1':  r'alpha 1',
@@ -74,7 +74,7 @@ class Version(object):
         match = self.match(version)
         if not match:
             raise Exit(f'Invalid version {version!r}.')
-        self.milestone = 'v' + match.group('number')
+        self.release = match.group('release')
         self.preview = match.group('pre')
         self.dev = match.group('dev')
         self.path = path
@@ -82,7 +82,11 @@ class Version(object):
 
     @property
     def version(self):
-        return self.milestone[1:] + (self.preview or '') + (self.dev or '')
+        return self.release + (self.preview or '') + (self.dev or '')
+
+    @property
+    def milestone(self):
+        return 'v' + self.release
 
     @classmethod
     def from_file(cls, path, pattern=VERSION_PATTERN):
@@ -94,19 +98,19 @@ class Version(object):
     def to_dev(self, number=None):
         if not self.dev:
             if not self.preview:
-                self._increment_milestone()
+                self._increment_release()
             else:
                 self._increment_preview()
         self.dev = '.dev' + (number or time.strftime('%Y%m%d'))
         return self
 
-    def _increment_milestone(self):
-        tokens = self.milestone[1:].split('.')
+    def _increment_release(self):
+        tokens = self.release.split('.')
         if len(tokens) == 2:
             tokens.append('1')
         else:
             tokens[2] = str(int(tokens[2]) + 1)
-        self.milestone = 'v' + '.'.join(tokens)
+        self.release = '.'.join(tokens)
 
     def _increment_preview(self):
         self.preview = self.preview[:-1] + str(int(self.preview[-1]) + 1)
