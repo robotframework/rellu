@@ -35,10 +35,10 @@ Required Python modules
 Many steps are automated using `Invoke <http://pyinvoke.org>`_ and also
 other tools/modules such as `twine <https://pypi.python.org/pypi/twine>`_
 are needed. A pre-condition is installing all these tools, and that's easiest
-done using `pip <http://pip-installer.org>`_ and the `<requirements-dev.txt>`_
+done using `pip <http://pip-installer.org>`_ and the `<requirements-build.txt>`_
 file::
 
-    pip install -r requirements-dev.txt
+    pip install -r requirements-build.txt
 
 Using Invoke
 ~~~~~~~~~~~~
