@@ -32,8 +32,8 @@ Main features
   Also this file can be used as a template.
 
 - `setup.py`_ using general good practices that can also be used as
-  a template. Notice that bigger projects may also need ``MANIFEST.in``
-  and ``setup.cfg`` files.
+  a template. There's also super simple `MANIFEST.in`_, but this project
+  doesn't need ``setup.cfg``.
 
 Dependencies
 ------------
@@ -77,5 +77,6 @@ be configured using these rules:
 .. _tasks.py: https://github.com/robotframework/rellu/blob/master/tasks.py
 .. _BUILD.rst: https://github.com/robotframework/rellu/blob/master/BUILD.rst
 .. _setup.py: https://github.com/robotframework/rellu/blob/master/setup.py
+.. _MANIFEST.in: https://github.com/robotframework/rellu/blob/master/MANIFEST.in
 .. _requirements.txt: https://github.com/robotframework/rellu/blob/master/requirements.txt
 .. _requirements-build.txt: https://github.com/robotframework/rellu/blob/master/requirements-build.txt
