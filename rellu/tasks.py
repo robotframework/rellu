@@ -26,8 +26,8 @@ def clean(ctx, remove_dist=True, create_dirs=False):
     '*$py.class' and '*~' files.
 
     Args:
-        remove_dist:  Remove also 'dist' (default).
-        create_dirs:  Re-create 'build' and 'dist' after removing them.
+        remove_dist: Remove also 'dist' (default).
+        create_dirs: Re-create 'build' and 'dist' after removing them.
     """
     for name in ['build', 'dist']:
         if os.path.isdir(name) and (name != 'dist' or remove_dist):
