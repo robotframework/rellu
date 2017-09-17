@@ -15,10 +15,11 @@ Main features
 - Utilities that can be used by custom Invoke_ tasks. These utilities
   are importable directly from the `rellu module`_:
 
-  - Setting pre-defined labels in issue tracker.
-  - Generating release notes based on issues in the tracker
   - Setting project version, including automatically setting it to
-    next suitable development version.
+    the next suitable development version.
+  - Setting common labels in the issue tracker.
+  - Generating release notes based on issues in the tracker. Requires
+    project to use pre-defined labels.
 
 - Generic Invoke_ tasks in the `rellu.tasks module`_:
 
