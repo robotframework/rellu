@@ -24,7 +24,8 @@ VERSION_PATTERN = "__version__ = '(.*)'"
 class Version(object):
     """Class representing versions in PEP-440 compatible format."""
     match = re.compile(r'^(?P<release>\d+\.\d+(\.\d+)?)'
-                       r'(?P<pre>(a|b|rc)[12345])?(?P<dev>.dev\d+)?$').match
+                       r'(?P<pre>(a|b|rc)[12345])?'
+                       r'(?P<dev>.dev\d+)?$').match
     preview_map = {
         'a1':  r'alpha 1',
         'a2':  r'alpha [12]',
@@ -55,22 +56,19 @@ class Version(object):
         - No value. Version is read from file.
         - Actual version number to use. See below for supported formats.
         - String 'dev' to read the version from file and to update it to
-          latest development version (e.g. 3.0 -> 3.0.1.dev, 3.1.1 -> 3.1.2.dev,
-          3.2a1 -> 3.2.dev) with the current date added to the end.
+          latest suitable development version (e.g. 3.0 -> 3.0.1.dev1,
+          3.1.1 -> 3.1.2.dev1, 3.2a1 -> 3.2a2.dev1, 3.2.dev1 -> 3.2.dev2).
 
         Given version number must be in one of these PEP-440 compatible formats:
         - Stable version in 'X.Y' or 'X.Y.Z' format (e.g. 3.0, 3.2.1)
         - Pre-releases with 'aN', 'bN' or 'rcN' postfix (e.g. 3.0a1, 3.1.1rc2)
-        - Development releases with '.devYYYYMMDD' postfix (e.g.
-          3.2.1.dev20170904) or with '.dev' alone (e.g. 3.2.1.dev) in which
-          case the current date is added automatically.
+        - Development releases with '.devN' postfix (e.g. 3.2.1.dev1 or
+          3.2a1.dev2).
         """
         if not version:
             version = Version.from_file(path, pattern).version
         elif version == 'dev':
             version = Version.from_file(path, pattern).to_dev().version
-        elif version.endswith('.dev'):
-            version += time.strftime('%Y%m%d')
         match = self.match(version)
         if not match:
             raise Exit(f'Invalid version {version!r}.')
@@ -95,14 +93,22 @@ class Version(object):
         match = re.search(pattern, content)
         return Version(match.group(1), path, pattern)
 
-    def to_dev(self, number=None):
-        if not self.dev:
-            if not self.preview:
-                self._increment_release()
-            else:
+    def to_dev(self):
+        if self.dev:
+            self._increment_dev()
+        else:
+            if self.preview:
                 self._increment_preview()
-        self.dev = '.dev' + (number or time.strftime('%Y%m%d'))
+            else:
+                self._increment_release()
+            self.dev = '.dev1'
         return self
+
+    def _increment_dev(self):
+        self.dev = '.dev' + str(int(self.dev[4:]) + 1)
+
+    def _increment_preview(self):
+        self.preview = self.preview[:-1] + str(int(self.preview[-1]) + 1)
 
     def _increment_release(self):
         tokens = self.release.split('.')
@@ -111,9 +117,6 @@ class Version(object):
         else:
             tokens[2] = str(int(tokens[2]) + 1)
         self.release = '.'.join(tokens)
-
-    def _increment_preview(self):
-        self.preview = self.preview[:-1] + str(int(self.preview[-1]) + 1)
 
     def is_included(self, issue):
         if issue.milestone != self.milestone:

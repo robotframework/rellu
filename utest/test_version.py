@@ -30,17 +30,17 @@ def test_invalid_version():
 
 
 def test_to_dev():
-    v = Version('1.0').to_dev('1')
+    v = Version('1.0').to_dev()
     assert v.version == '1.0.1.dev1'
     assert v.release == '1.0.1'
     assert v.preview is None
     assert v.dev == '.dev1'
-    v = Version('1.0a1').to_dev('2')
-    assert v.version == '1.0a2.dev2'
+    v = Version('1.0a1').to_dev()
+    assert v.version == '1.0a2.dev1'
     assert v.release == '1.0'
     assert v.preview == 'a2'
-    assert v.dev == '.dev2'
-    v = Version('1.0a1.dev1').to_dev('2')
+    assert v.dev == '.dev1'
+    v = Version('1.0a1.dev1').to_dev()
     assert v.version == '1.0a1.dev2'
     assert v.release == '1.0'
     assert v.preview == 'a1'
