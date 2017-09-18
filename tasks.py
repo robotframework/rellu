@@ -56,10 +56,10 @@ def set_version(ctx, version):
 
     Following PEP-440 compatible version numbers are supported:
     - Final version like 3.0 or 3.1.2.
-    - Alpha, beta or release candidate with an incremented number like
-      3.0a1, 3.0b3 or 3.0.1rc1.
-    - Development version with an incremented number like 3.0.dev1 or
-      3.1a1.dev2.
+    - Alpha, beta or release candidate with ``a``, ``b`` or ``rc`` postfix,
+      respectively, and an incremented number like 3.0a1 or 3.0.1rc1.
+    - Development version with ``.dev`` postix and an incremented number like
+      3.0.dev1 or 3.1a1.dev2.
 
     When the given version is ``dev``, the existing version number is updated
     to the next suitable development version. For example, 3.0 -> 3.0.1.dev1,
@@ -111,5 +111,8 @@ def initialize(ctx, username=None, password=None):
 
     Username and password can also be specified using ``GITHUB_USERNAME`` and
     ``GITHUB_PASSWORD`` environment variable, respectively.
+
+    Should only be executed once when taking ``rellu`` tooling to use or
+    when labels it uses have changed.
     """
     initialize_labels(REPOSITORY, username, password)
