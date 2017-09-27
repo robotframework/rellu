@@ -71,7 +71,7 @@ Full list of fixes and enhancements
 
 Altogether 4 issues. View on the `issue tracker <https://github.com/robotframework/rellu/issues?q=milestone%3Av0.5>`__.
 
-.. _#9: https://github.com/rellu/issues/9
-.. _#6: https://github.com/rellu/issues/6
-.. _#7: https://github.com/rellu/issues/7
-.. _#8: https://github.com/rellu/issues/8
+.. _#9: https://github.com/robotframework/rellu/issues/9
+.. _#6: https://github.com/robotframework/rellu/issues/6
+.. _#7: https://github.com/robotframework/rellu/issues/7
+.. _#8: https://github.com/robotframework/rellu/issues/8

@@ -39,4 +39,4 @@ Full list of fixes and enhancements
 
 Altogether 1 issue. View on the `issue tracker <https://github.com/robotframework/rellu/issues?q=milestone%3Av0.2>`__.
 
-.. _#2: https://github.com/rellu/issues/2
+.. _#2: https://github.com/robotframework/rellu/issues/2
