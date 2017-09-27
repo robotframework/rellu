@@ -63,7 +63,7 @@ class ReleaseNotesGenerator:
     def _get_issues_in_milestone(self, repository, version):
         milestone = self._get_milestone(repository, version)
         for data in repository.get_issues(milestone=milestone, state='all'):
-            issue = Issue(data, repository.name)
+            issue = Issue(data, repository.full_name)
             if issue.included_in_release_notes(version):
                 yield issue
 
@@ -72,7 +72,7 @@ class ReleaseNotesGenerator:
             if milestone.title == version.milestone:
                 return milestone
         raise Exit(f"Milestone '{version.milestone}' not found from "
-                   f"repository '{repository.name}'.")
+                   f"repository '{repository.full_name}'.")
 
     @contextmanager
     def _output_enabled(self, file, version):
