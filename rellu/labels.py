@@ -52,12 +52,16 @@ def initialize_labels(repository, username=None, password=None):
     repository = get_repository(repository, username, password,
                                 auth_required=True)
     labels = [label.rsplit(None, 1) for label in LABELS.splitlines() if label]
-    existing_labels = {label.name.lower(): label.name
+    existing_labels = {_normalize(label.name): label.name
                        for label in repository.get_labels()}
     for name, color in labels:
-        normalized = name.lower()
-        if normalized in existing_labels:
-            label = repository.get_label(existing_labels[normalized])
-            label.edit(name, color)
-        else:
+        try:
+            normalized = existing_labels[_normalize(name)]
+        except KeyError:
             repository.create_label(name, color)
+        else:
+            repository.get_label(normalized).edit(name, color)
+
+
+def _normalize(label):
+    return label.lower().replace(' ', '')
