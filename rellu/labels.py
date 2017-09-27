@@ -49,7 +49,8 @@ prio-low        41ae76
 
 
 def initialize_labels(repository, username=None, password=None):
-    repository = get_repository(repository, username, password)
+    repository = get_repository(repository, username, password,
+                                auth_required=True)
     labels = [label.rsplit(None, 1) for label in LABELS.splitlines() if label]
     existing_labels = {label.name.lower(): label.name
                        for label in repository.get_labels()}
