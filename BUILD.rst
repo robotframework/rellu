@@ -195,11 +195,12 @@ Post actions
       git commit -m "Back to dev version" rellu/__init__.py
       git push
 
-   For example, ``3.2.1`` is changed to ``3.2.2.dev`` with the current date
-   appended.
+   For example, ``1.2.3`` is changed to ``1.2.4.dev1`` and ``2.0.1a1``
+   to ``2.0.1a2.dev1``.
 
 3. Close the `issue tracker milestone
    <https://github.com/robotframework/rellu/milestones>`__.
+   Create also new milestone for the next release unless one exists already.
 
 Announcements
 -------------
