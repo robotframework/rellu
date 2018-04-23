@@ -12,42 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
+from invoke import Exit
+
 from .repo import get_repository
 
 
 LABELS = '''
-bug                 d73a4a    Something isn't working
-enhancement         a2eeef    Proposal for a new feature or enhancement
-task                ededed    Generic task not listed in release notes
+bug                       d73a4a    Something isn't working
+enhancement               a2eeef    Proposal for a new feature or enhancement
+task                      ededed    Generic task not listed in release notes
 
-alpha 1             ffffff
-alpha 2             ffffff
-alpha 3             ffffff
-beta 1              ffffff
-beta 2              ffffff
-beta 3              ffffff
-rc 1                ffffff
-rc 2                ffffff
-rc 3                ffffff
+alpha 1                   ffffff
+alpha 2                   ffffff
+alpha 3                   ffffff
+beta 1                    ffffff
+beta 2                    ffffff
+beta 3                    ffffff
+rc 1                      ffffff
+rc 2                      ffffff
+rc 3                      ffffff
 
-bwic                fbca04    Backwards-incompatible change
-depr                fef2c0    Deprecated feature
+backwards incompatible    fbca04    Backwards incompatible change
+deprecation               fef2c0    Deprecated feature
 
-duplicate           000000    This issue or pull request already exists
-wont fix            000000    This will not be worked on
-invalid             000000    This doesn't seem right
-in progress         ededed    Development started
-pending             ededed    Development stalled
-needs review        ededed    Review needed
+duplicate                 000000    This issue or pull request already exists
+wont fix                  000000    This will not be worked on
+invalid                   000000    This doesn't seem right
+in progress               ededed    Development started
+pending                   ededed    Development stalled
+needs review              ededed    Review needed
 
-good first issue    7057ff    Good for newcomers
-help wanted         008672    Extra help appreciated
-acknowledge         bc82e0    Contribution to be acknowledged in release notes
+good first issue          7057ff    Good for newcomers
+help wanted               008672    Extra help appreciated
+acknowledge               bc82e0    To be acknowledged in release notes
 
-prio-critical       00441b
-prio-high           006d2c
-prio-medium         238b45
-prio-low            41ae76
+priority: critical        00441b
+priority: high            006d2c
+priority: medium          238b45
+priority: low             41ae76
 '''
 
 
@@ -68,10 +72,12 @@ def initialize_labels(repository, username=None, password=None):
 
 
 def _parse_label(line):
-    name = line[:20].strip()
-    color = line[20:30].strip()
-    description = line[30:].strip()
-    return name, color, description
+    tokens = re.split('\s{2,}', line)
+    if len(tokens) == 2:
+        tokens.append('')
+    if len(tokens) != 3 or len(tokens[1]) != 6:
+        raise Exit(f'Invalid label information:\n{line}')
+    return tokens
 
 
 def _normalize(label):

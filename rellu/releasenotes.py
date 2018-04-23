@@ -99,19 +99,23 @@ class ReleaseNotesGenerator:
         self._write(self.post_intro)
 
     def _write_most_important_enhancements(self, issues, version):
-        self._write_issues_with_label('Most important enhancements', issues,
-                                      version, 'prio-critical', 'prio-high')
+        self._write_issues_with_label('Most important enhancements',
+                                      issues, version,
+                                      'priority: critical', 'priority: high')
 
     def _write_backwards_incompatible_changes(self, issues, version):
-        self._write_issues_with_label('Backwards incompatible changes', issues,
-                                      version, 'bwic')
+        self._write_issues_with_label('Backwards incompatible changes',
+                                      issues, version,
+                                      'backwards incompatible')
 
     def _write_deprecated_features(self, issues, version):
-        self._write_issues_with_label('Deprecated features', issues, version,
-                                      'depr')
+        self._write_issues_with_label('Deprecated features',
+                                      issues, version,
+                                      'deprecation')
 
     def _write_acknowledgements(self, issues, version):
-        self._write_issues_with_label('Acknowledgements', issues, version,
+        self._write_issues_with_label('Acknowledgements',
+                                      issues, version,
                                       'acknowledge')
 
     def _write_issue_table(self, issues, version):
@@ -208,10 +212,10 @@ class Issue(object):
 
     @property
     def priority(self):
-        priorities = ['prio-' + prio for prio in self.PRIORITIES]
+        priorities = ['priority: ' + prio for prio in self.PRIORITIES]
         for label in self.labels:
             if label in priorities:
-                return label.split('-')[1]
+                return label.split(': ')[1]
         return self.NOT_SET
 
     def included_in_release_notes(self, version):
