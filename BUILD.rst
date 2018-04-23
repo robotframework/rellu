@@ -185,11 +185,7 @@ Creating distributions
 Post actions
 ------------
 
-1. Back to master if needed::
-
-      git checkout master
-
-2. Set dev version based on the previous version::
+1. Set dev version based on the previous version::
 
       invoke set-version dev
       git commit -m "Back to dev version" rellu/__init__.py
@@ -198,9 +194,10 @@ Post actions
    For example, ``1.2.3`` is changed to ``1.2.4.dev1`` and ``2.0.1a1``
    to ``2.0.1a2.dev1``.
 
-3. Close the `issue tracker milestone
+2. Close the `issue tracker milestone
    <https://github.com/robotframework/rellu/milestones>`__.
-   Create also new milestone for the next release unless one exists already.
+
+3. Create new milestone for the next release unless one exists already.
 
 Announcements
 -------------
