@@ -26,7 +26,7 @@ Requires Python >= 3.6 and invoke >= 0.20.
 import sys
 
 
-__version__ = '0.6.1.dev1'
+__version__ = '0.7'
 
 
 if sys.version_info < (3, 6):
