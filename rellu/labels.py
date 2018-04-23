@@ -20,8 +20,8 @@ from .repo import get_repository
 
 
 LABELS = '''
-bug                       d73a4a    Something isn't working
-enhancement               a2eeef    Proposal for a new feature or enhancement
+bug                       d73a4a
+enhancement               a2eeef
 task                      ededed    Generic task not listed in release notes
 
 alpha 1                   ffffff
@@ -34,15 +34,15 @@ rc 1                      ffffff
 rc 2                      ffffff
 rc 3                      ffffff
 
-backwards incompatible    fbca04    Backwards incompatible change
-deprecation               fef2c0    Deprecated feature
+backwards incompatible    fbca04
+deprecation               fef2c0
 
-duplicate                 000000    This issue or pull request already exists
-wont fix                  000000    This will not be worked on
-invalid                   000000    This doesn't seem right
-in progress               ededed    Development started
-pending                   ededed    Development stalled
-needs review              ededed    Review needed
+duplicate                 000000
+wont fix                  000000
+invalid                   000000
+in progress               ededed
+pending                   ededed
+needs review              ededed
 
 good first issue          7057ff    Good for newcomers
 help wanted               008672    Extra help appreciated
