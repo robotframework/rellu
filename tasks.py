@@ -112,7 +112,7 @@ def initialize(ctx, username=None, password=None):
     Username and password can also be specified using ``GITHUB_USERNAME`` and
     ``GITHUB_PASSWORD`` environment variable, respectively.
 
-    Should only be executed once when taking ``rellu`` tooling to use or
-    when labels it uses have changed.
+    Should be executed when taking ``rellu`` tooling to use or when labels
+    it uses have changed.
     """
     initialize_labels(REPOSITORY, username, password)
