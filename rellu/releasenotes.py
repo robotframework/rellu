@@ -51,7 +51,7 @@ class ReleaseNotesGenerator:
             self._write_most_important_enhancements(issues, version)
             self._write_backwards_incompatible_changes(issues, version)
             self._write_deprecated_features(issues, version)
-            self._write_acknowledgements(issues)
+            self._write_acknowledgements(issues, version)
             self._write_issue_table(issues, version)
             self._write_targets(issues)
 
@@ -110,9 +110,9 @@ class ReleaseNotesGenerator:
         self._write_issues_with_label('Deprecated features', issues, version,
                                       'depr')
 
-    def _write_acknowledgements(self, issues):
-        self._write_header('Acknowledgements')
-        self._write('**UPDATE** based on AUTHORS.txt or similar.')
+    def _write_acknowledgements(self, issues, version):
+        self._write_issues_with_label('Acknowledgements', issues, version,
+                                      'acknowledge')
 
     def _write_issue_table(self, issues, version):
         self._write_header('Full list of fixes and enhancements')
