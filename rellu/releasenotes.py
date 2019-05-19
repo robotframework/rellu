@@ -192,7 +192,8 @@ class Issue(object):
     def __init__(self, issue, repository):
         self.id = f'#{issue.number}'
         self.milestone = issue.milestone.title
-        self.summary = issue.title
+        # Avoid escaping problems with zero-width space in cases like `\`.
+        self.summary = issue.title.replace('\\`', '\\\N{ZERO WIDTH SPACE}`')
         self.labels = [label.name for label in issue.get_labels()]
         self.url = f'https://github.com/{repository}/issues/{issue.number}'
 
