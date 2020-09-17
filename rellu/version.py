@@ -17,7 +17,7 @@ import re
 from invoke import Exit
 
 
-VERSION_PATTERN = "__version__ = '(.*)'"
+VERSION_PATTERN = "__version__ = ['\"](.*)['\"]"
 
 
 class Version(object):
