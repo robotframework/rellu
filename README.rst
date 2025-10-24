@@ -43,7 +43,7 @@ Rellu is designed to be used together with Invoke_ which is also used
 internally. All project dependencies are listed in the `requirements.txt`_
 and `requirements-build.txt`_ files.
 
-Rellu itself works only with Python 3.6 or never, but projects it is used
+Rellu itself works only with Python 3.10 or newer, but projects it is used
 with can naturally support also older Python releases. Rellu is developed and
 tested on Linux, but ought to work just fine also on OSX. Using it on
 Windows may work, but that's not tested or supported.
