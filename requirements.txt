@@ -1,2 +1,2 @@
-invoke>=0.20
-PyGithub>=1.39
+invoke>=2.00
+PyGithub>=2.00
