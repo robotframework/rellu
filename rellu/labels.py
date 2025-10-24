@@ -72,7 +72,7 @@ def initialize_labels(repository, username=None, password=None):
 
 
 def _parse_label(line):
-    tokens = re.split('\s{2,}', line)
+    tokens = re.split(r'\s{2,}', line)
     if len(tokens) == 2:
         tokens.append('')
     if len(tokens) != 3 or len(tokens[1]) != 6:
