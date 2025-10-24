@@ -17,10 +17,10 @@ import re
 from invoke import Exit
 
 
-VERSION_PATTERN = "__version__ = ['\"](.*)['\"]"
+VERSION_PATTERN = r"__version__ = ['\"](.*)['\"]"
 
 
-class Version(object):
+class Version:
     """Class representing versions in PEP-440 compatible format."""
     match = re.compile(r'^(?P<release>\d+\.\d+(\.\d+)?)'
                        r'(?P<pre>(a|b|rc)[12345])?'
@@ -128,7 +128,7 @@ class Version(object):
         return bool(re.match(f'^{pattern}$', issue.preview))
 
     def write(self):
-        replacement = self.pattern.replace('(.*)', self.version)
+        replacement = self.pattern.replace(r"['\"](.*)['\"]", f'"{self.version}"')
         with open(self.path) as file:
             content = re.sub(self.pattern, replacement, file.read())
         with open(self.path, 'w') as file:
