@@ -1,6 +1,7 @@
 # Requirements needed when creating releases.
 wheel
 twine
+build
 
 # Include also normal project requirements.
 -r requirements.txt
