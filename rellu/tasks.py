@@ -29,17 +29,17 @@ def clean(ctx, remove_dist=True, create_dirs=False):
         remove_dist: Remove also 'dist' (default).
         create_dirs: Re-create 'build' and 'dist' after removing them.
     """
-    for name in ['build', 'dist']:
-        if os.path.isdir(name) and (name != 'dist' or remove_dist):
-            print(f'Removing directory {name!r}.')
+    for name in ["build", "dist"]:
+        if os.path.isdir(name) and (name != "dist" or remove_dist):
+            print(f"Removing directory {name!r}.")
             shutil.rmtree(name)
         if create_dirs and not os.path.isdir(name):
-            print(f'Creating directory {name!r}.')
+            print(f"Creating directory {name!r}.")
             os.mkdir(name)
-    print('Removing temporary files.')
-    for directory, dirs, files in os.walk('.'):
+    print("Removing temporary files.")
+    for directory, dirs, files in os.walk("."):
         for name in files:
-            if name.endswith(('.pyc', '$py.class', '~')):
+            if name.endswith((".pyc", "$py.class", "~")):
                 os.remove(os.path.join(directory, name))
-        if '__pycache__' in dirs:
-            shutil.rmtree(os.path.join(directory, '__pycache__'))
+        if "__pycache__" in dirs:
+            shutil.rmtree(os.path.join(directory, "__pycache__"))

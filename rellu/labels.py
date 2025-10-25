@@ -19,7 +19,7 @@ from invoke import Exit
 from .repo import get_repository
 
 
-LABELS = '''
+LABELS = """
 bug                       d73a4a
 enhancement               a2eeef
 task                      ededed    Generic task not listed in release notes
@@ -52,16 +52,15 @@ priority: critical        00441b
 priority: high            006d2c
 priority: medium          238b45
 priority: low             41ae76
-'''
+"""
 
 
 def initialize_labels(repository, username=None, password=None):
-    repository = get_repository(repository, username, password,
-                                auth_required=True)
-    labels = [_parse_label(line)
-              for line in LABELS.splitlines() if line.strip()]
-    existing_labels = {_normalize(label.name): label.name
-                       for label in repository.get_labels()}
+    repository = get_repository(repository, username, password, auth_required=True)
+    labels = [_parse_label(line) for line in LABELS.splitlines() if line.strip()]
+    existing_labels = {
+        _normalize(label.name): label.name for label in repository.get_labels()
+    }
     for name, color, description in labels:
         try:
             normalized = existing_labels[_normalize(name)]
@@ -72,13 +71,13 @@ def initialize_labels(repository, username=None, password=None):
 
 
 def _parse_label(line):
-    tokens = re.split(r'\s{2,}', line)
+    tokens = re.split(r"\s{2,}", line)
     if len(tokens) == 2:
-        tokens.append('')
+        tokens.append("")
     if len(tokens) != 3 or len(tokens[1]) != 6:
-        raise Exit(f'Invalid label information:\n{line}')
+        raise Exit(f"Invalid label information:\n{line}")
     return tokens
 
 
 def _normalize(label):
-    return label.lower().replace(' ', '')
+    return label.lower().replace(" ", "")

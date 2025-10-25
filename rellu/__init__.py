@@ -30,7 +30,7 @@ __version__ = "0.8.0"
 
 
 if sys.version_info < (3, 10):
-    raise ImportError('Python 3.10 or newer required.')
+    raise ImportError("Python 3.10 or newer required.")
 
 try:
     from invoke import __version_info__ as invoke_version
@@ -38,7 +38,7 @@ try:
     if invoke_version < (2, 0):
         raise ImportError
 except ImportError:
-    raise ImportError('invoke 2.0 or newer required.')
+    raise ImportError("invoke 2.0 or newer required.")
 
 
 from .labels import initialize_labels

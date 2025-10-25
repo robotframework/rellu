@@ -19,8 +19,8 @@ from invoke import Exit
 
 
 def get_repository(name, username=None, password=None, auth_required=False):
-    username = username or os.getenv('GITHUB_USERNAME')
-    password = password or os.getenv('GITHUB_PASSWORD')
+    username = username or os.getenv("GITHUB_USERNAME")
+    password = password or os.getenv("GITHUB_PASSWORD")
     if auth_required and not (username and password):
-        raise Exit('Mandatory GitHub username/password not given.')
+        raise Exit("Mandatory GitHub username/password not given.")
     return Github(username, password).get_repo(name)
