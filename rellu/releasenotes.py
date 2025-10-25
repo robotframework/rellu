@@ -19,10 +19,10 @@ from contextlib import contextmanager
 from functools import total_ordering
 from pathlib import Path
 
+from github.Issue import Issue as GitHubIssue
 from invoke import Exit
 
 from .repo import get_repository
-
 
 class ReleaseNotesGenerator:
     pre_intro = '''
@@ -184,18 +184,25 @@ class ReleaseNotesGenerator:
 
 
 @total_ordering
-class Issue(object):
+class Issue:
     NOT_SET = '---'
     PRIORITIES = ['critical', 'high', 'medium', 'low', NOT_SET]
     TYPES = ['bug', 'enhancement', 'task', NOT_SET]
+    GITHUB_TYPES = {
+        "Bug": "bug",
+        "Feature": "enhancement",
+        "Task": "task",
+        NOT_SET: NOT_SET
+    }
 
-    def __init__(self, issue, repository):
+    def __init__(self, issue: GitHubIssue, repository: str):
         self.id = f'#{issue.number}'
         self.milestone = issue.milestone.title
         # Avoid escaping problems with zero-width space in cases like `\`.
         self.summary = issue.title.replace('\\`', '\\\N{ZERO WIDTH SPACE}`')
         self.labels = [label.name for label in issue.get_labels()]
         self.url = f'https://github.com/{repository}/issues/{issue.number}'
+        self.gh_issue_type = issue.type
 
     @property
     def preview(self):
@@ -206,6 +213,9 @@ class Issue(object):
 
     @property
     def type(self):
+        if self.gh_issue_type is not None:
+            name = self.gh_issue_type.name
+            return self.GITHUB_TYPES.get(name, self.NOT_SET)
         for label in self.labels:
             if label in self.TYPES:
                 return label
