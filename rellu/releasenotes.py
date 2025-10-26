@@ -203,12 +203,6 @@ class Issue:
     NOT_SET = "---"
     PRIORITIES = ["critical", "high", "medium", "low", NOT_SET]
     TYPES = ["bug", "enhancement", "task", NOT_SET]
-    GITHUB_TYPES = {
-        "Bug": "bug",
-        "Feature": "enhancement",
-        "Task": "task",
-        NOT_SET: NOT_SET,
-    }
 
     def __init__(self, issue: GitHubIssue, repository: str):
         self.id = f"#{issue.number}"
@@ -229,8 +223,7 @@ class Issue:
     @property
     def type(self):
         if self.gh_issue_type is not None:
-            name = self.gh_issue_type.name
-            return self.GITHUB_TYPES.get(name, self.NOT_SET)
+            return self.gh_issue_type.name.lower()
         for label in self.labels:
             if label in self.TYPES:
                 return label
