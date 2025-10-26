@@ -52,6 +52,7 @@ priority: critical        00441b
 priority: high            006d2c
 priority: medium          238b45
 priority: low             41ae76
+no notes                  2cf7c4    Issue does not need to be mentioned in release notes
 """
 
 

@@ -240,13 +240,19 @@ class Issue:
     def included_in_release_notes(self, version):
         if self.type == "task":
             return False
+        if "no notes" in self.labels:
+            return False
         return version.is_included(self)
 
     @property
     def sort_key(self):
+        try:
+            types_index = self.TYPES.index(self.type)
+        except ValueError:
+            types_index = len(self.TYPES) + 1
         return (
             self.PRIORITIES.index(self.priority),
-            self.TYPES.index(self.type),
+            types_index,
             self.id,
         )
 
