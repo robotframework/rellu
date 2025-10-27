@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import re
+import string
 import sys
 import time
 from contextlib import contextmanager
@@ -24,6 +25,9 @@ from invoke import Exit
 
 from .repo import get_repository
 
+PRIORITY_LIST = list(string.ascii_lowercase)
+PRIORITY_LIST.remove("b")
+PRIORITY_LIST.insert(5, "b")  # 'b' for 'bug' comes after 'e' for 'enhancement' or 'f' for 'feature'
 
 class ReleaseNotesGenerator:
     pre_intro = """
@@ -202,7 +206,6 @@ class ReleaseNotesGenerator:
 class Issue:
     NOT_SET = "---"
     PRIORITIES = ["critical", "high", "medium", "low", NOT_SET]
-    TYPES = ["bug", "enhancement", "task", NOT_SET]
 
     def __init__(self, issue: GitHubIssue, repository: str):
         self.id = f"#{issue.number}"
@@ -211,7 +214,16 @@ class Issue:
         self.summary = issue.title.replace("\\`", "\\\N{ZERO WIDTH SPACE}`")
         self.labels = [label.name for label in issue.get_labels()]
         self.url = f"https://github.com/{repository}/issues/{issue.number}"
-        self.gh_issue_type = issue.type
+        self.type = self._get_type(issue)
+
+    def _get_type(self, issue: GitHubIssue):
+        if issue.type is not None:
+            return issue.type.name.lower()
+        label_types = ["bug", "enhancement", "task"]
+        for label in self.labels:
+            if label in label_types:
+                return label
+        return self.NOT_SET
 
     @property
     def preview(self):
@@ -219,15 +231,6 @@ class Issue:
             if label.startswith(("alpha ", "beta ", "rc ")):
                 return label
         return None
-
-    @property
-    def type(self):
-        if self.gh_issue_type is not None:
-            return self.gh_issue_type.name.lower()
-        for label in self.labels:
-            if label in self.TYPES:
-                return label
-        return self.NOT_SET
 
     @property
     def priority(self):
@@ -246,10 +249,8 @@ class Issue:
 
     @property
     def sort_key(self):
-        try:
-            types_index = self.TYPES.index(self.type)
-        except ValueError:
-            types_index = len(self.TYPES) + 1
+        firsts_letter = self.type[0] if self.type != self.NOT_SET else "z"
+        types_index = PRIORITY_LIST.index(firsts_letter)
         return (
             self.PRIORITIES.index(self.priority),
             types_index,
