@@ -4,7 +4,7 @@ import sys
 from invoke import task
 
 from rellu.tasks import clean
-from rellu import initialize_labels, Version, ReleaseNotesGenerator
+from rellu import initialize_labels, Version, ReleaseNotesGenerator, Issue
 
 
 assert Path.cwd() == Path(__file__).parent
@@ -96,8 +96,12 @@ def release_notes(ctx, version=None, username=None, password=None, write=False):
     """
     version = Version(version, VERSION_PATH)
     file = RELEASE_NOTES_PATH if write else sys.stdout
+    type_order = ["bug", "enhancement", "feature", "task"]
     generator = ReleaseNotesGenerator(
-        REPOSITORY, RELEASE_NOTES_TITLE, RELEASE_NOTES_INTRO
+        REPOSITORY,
+        RELEASE_NOTES_TITLE,
+        RELEASE_NOTES_INTRO,
+        type_order=type_order,
     )
     generator.generate(version, username, password, file)
 

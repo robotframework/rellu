@@ -42,5 +42,5 @@ except ImportError:
 
 
 from .labels import initialize_labels
-from .releasenotes import ReleaseNotesGenerator
+from .releasenotes import ReleaseNotesGenerator, Issue
 from .version import Version
