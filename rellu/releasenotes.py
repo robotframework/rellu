@@ -25,9 +25,8 @@ from invoke import Exit
 
 from .repo import get_repository
 
-PRIORITY_LIST = list(string.ascii_lowercase)
-PRIORITY_LIST.remove("b")
-PRIORITY_LIST.insert(5, "b")  # 'b' for 'bug' comes after 'e' for 'enhancement' or 'f' for 'feature'
+TYPE_PRIORITY_LIST = list(string.ascii_lowercase)
+
 
 class ReleaseNotesGenerator:
     pre_intro = """
@@ -39,12 +38,20 @@ class ReleaseNotesGenerator:
    :local:
 """.strip()
 
-    def __init__(self, repository, title, intro, default_targets=()):
+    def __init__(
+        self,
+        repository,
+        title,
+        intro,
+        default_targets=(),
+        type_order: list[str] | None = None,
+    ):
         self.repository = repository
         self.title = title
         self.intro = intro
         self.default_targets = default_targets
         self._output = None
+        self._type_order = type_order
 
     def generate(self, version, username=None, password=None, file=sys.stdout):
         if version.dev:
@@ -69,7 +76,7 @@ class ReleaseNotesGenerator:
     def _get_issues_in_milestone(self, repository, version):
         milestone = self._get_milestone(repository, version)
         for data in repository.get_issues(milestone=milestone, state="all"):
-            issue = Issue(data, repository.full_name)
+            issue = Issue(data, repository.full_name, self._type_order)
             if issue.included_in_release_notes(version):
                 yield issue
 
@@ -207,7 +214,12 @@ class Issue:
     NOT_SET = "---"
     PRIORITIES = ["critical", "high", "medium", "low", NOT_SET]
 
-    def __init__(self, issue: GitHubIssue, repository: str):
+    def __init__(
+        self,
+        issue: GitHubIssue,
+        repository: str,
+        type_order: list[str] | None = None,
+    ):
         self.id = f"#{issue.number}"
         self.milestone = issue.milestone.title
         # Avoid escaping problems with zero-width space in cases like `\`.
@@ -215,6 +227,7 @@ class Issue:
         self.labels = [label.name for label in issue.get_labels()]
         self.url = f"https://github.com/{repository}/issues/{issue.number}"
         self.type = self._get_type(issue)
+        self._custom_type_order = type_order
 
     def _get_type(self, issue: GitHubIssue):
         if issue.type is not None:
@@ -248,12 +261,24 @@ class Issue:
         return version.is_included(self)
 
     @property
-    def sort_key(self):
+    def _type_order(self) -> int:
+        if self._custom_type_order:
+            try:
+                return self._custom_type_order.index(self.type)
+            except ValueError:
+                message = (
+                    f"Issue type '{self.type}' not found in custom "
+                    f"order: {self._custom_type_order}."
+                )
+                raise ValueError(message)
         firsts_letter = self.type[0] if self.type != self.NOT_SET else "z"
-        types_index = PRIORITY_LIST.index(firsts_letter)
+        return TYPE_PRIORITY_LIST.index(firsts_letter)
+
+    @property
+    def sort_key(self):
         return (
             self.PRIORITIES.index(self.priority),
-            types_index,
+            self._type_order,
             self.id,
         )
 
