@@ -166,7 +166,7 @@ Creating distributions
 
 3. Create source distribution and `wheel <http://pythonwheels.com>`_::
 
-      python3 setup.py sdist bdist_wheel
+      python3 -m build
       ls -l dist
 
    Distributions can be tested locally if needed.
