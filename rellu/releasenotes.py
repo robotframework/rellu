@@ -25,7 +25,7 @@ from invoke import Exit
 
 from .repo import get_repository
 
-TYPE_PRIORITY_LIST = list(string.ascii_lowercase)
+TYPE_ORDER_LIST = list(string.ascii_lowercase)
 
 
 class ReleaseNotesGenerator:
@@ -272,7 +272,7 @@ class Issue:
                 )
                 raise ValueError(message)
         firsts_letter = self.type[0] if self.type != self.NOT_SET else "z"
-        return TYPE_PRIORITY_LIST.index(firsts_letter)
+        return TYPE_ORDER_LIST.index(firsts_letter)
 
     @property
     def sort_key(self):
