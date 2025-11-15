@@ -29,8 +29,8 @@ import sys
 __version__ = "0.8.1.dev1"
 
 
-if sys.version_info < (3, 10):
-    raise ImportError("Python 3.10 or newer required.")
+if sys.version_info < (3, 8):
+    raise ImportError("Python 3.8 or newer required.")
 
 try:
     from invoke import __version_info__ as invoke_version
