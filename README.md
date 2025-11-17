@@ -4,8 +4,6 @@ This project provides **tooling and templates** to ease the creation of releases
 
 To successfully adopt this project, you should be familiar with at least the **basics of Python packaging**.
 
----
-
 ## ✨ Main Features
 
 The core features of `rellu` are organized into reusable utilities and generic `Invoke` tasks:
@@ -25,8 +23,6 @@ These utilities can be used by custom `Invoke` tasks and are directly importable
 * **`BUILD.rst`:** A file containing **step-by-step instructions** for creating releases using the `Invoke` tasks defined in `tasks.py`, Git, and other tools. This file can also be used as a **template**.
 * **`setup.py`:** A file that follows general good practices and can also serve as a **template**. A very simple **`MANIFEST.in`** file is also included, though this project does not require a **`setup.cfg`**.
 
----
-
 ## 🔗 Dependencies
 
 `Rellu` is designed to be used **together with `Invoke`**, which is also utilized internally. All project dependencies are listed in the **`requirements.txt`** and **`requirements-build.txt`** files.
@@ -36,7 +32,7 @@ These utilities can be used by custom `Invoke` tasks and are directly importable
 * **Python:** `Rellu` itself works only with **Python 3.10 or newer**. Projects that use it can, of course, also support older Python releases.
 * **Operating System:** It is developed and tested on **Linux**, but ought to work just fine on **OSX**. Using it on **Windows** may work, but this is **neither tested nor officially supported**.
 
----
+
 
 ## ⚙️ Required Project Setup
 
