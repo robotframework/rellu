@@ -18,7 +18,7 @@ Topic :: Software Development :: Build Tools
 CURDIR = dirname(abspath(__file__))
 with open(join(CURDIR, NAME, '__init__.py')) as source:
     VERSION = re.search('\n__version__ = "(.*)"', source.read()).group(1)
-with open(join(CURDIR, 'README.rst')) as readme:
+with open(join(CURDIR, 'README.md')) as readme:
     README = readme.read()
 with open(join(CURDIR, 'requirements.txt')) as requirements:
     REQUIREMENTS = requirements.read().splitlines()
