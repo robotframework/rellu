@@ -1,0 +1,6 @@
+# Requirements needed when developing.
+ruff
+pytest
+
+# Include also normal project requirements.
+-r requirements.txt
