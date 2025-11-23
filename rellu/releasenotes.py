@@ -29,15 +29,6 @@ TYPE_ORDER_LIST = list(string.ascii_lowercase)
 
 
 class ReleaseNotesGenerator:
-    pre_intro_rst = """
-.. default-role:: code
-"""
-    post_intro_rst = """
-.. contents::
-   :depth: 2
-   :local:
-""".strip()
-
     def __init__(
         self,
         repository,
@@ -45,7 +36,6 @@ class ReleaseNotesGenerator:
         intro,
         default_targets=(),
         type_order: list[str] | None = None,
-        format: str = "rst",
     ):
         self.repository = repository
         self.title = title
@@ -53,9 +43,6 @@ class ReleaseNotesGenerator:
         self.default_targets = default_targets
         self._output = None
         self._type_order = type_order
-        self.format = format.lower()
-        if self.format not in ("rst", "markdown"):
-            raise ValueError(f"Unsupported format: {format}. Use 'rst' or 'markdown'.")
 
     def generate(self, version, username=None, password=None, file=sys.stdout):
         if version.dev:
@@ -112,13 +99,7 @@ class ReleaseNotesGenerator:
     def _write_intro(self, version):
         self._write_header(self.title.format(version=version), level=1)
         intro = self.intro.format(version=version, date=time.strftime("%A %B %-d, %Y"))
-        if self.format == "rst":
-            self._write(self.pre_intro_rst)
-            self._write(intro, newlines=2)
-            self._write(self.post_intro_rst)
-        else:  # markdown
-            self._write(intro, newlines=2)
-            self._write("## Table of Contents")
+        self._write(intro, newlines=2)
 
     def _write_most_important_enhancements(self, issues, version):
         self._write_issues_with_label(
@@ -146,60 +127,19 @@ class ReleaseNotesGenerator:
 
     def _write_issue_table(self, issues, version):
         self._write_header("Full list of fixes and enhancements")
-        
-        if self.format == "rst":
-            self._write_issue_table_rst(issues, version)
-        else:  # markdown
-            self._write_issue_table_markdown(issues, version)
-
-    def _write_issue_table_rst(self, issues, version):
-        self._write(
-            """
-.. list-table::
-    :header-rows: 1
-
-    * - ID
-      - Type
-      - Priority
-      - Summary
-""".strip()
-        )
-        prefix1 = "    * - "
-        prefix2 = "      - "
-        if version.preview:
-            self._write("      - Added")
-        for issue in issues:
-            self._write(prefix1 + issue.id)
-            self._write(prefix2 + issue.type)
-            self._write(prefix2 + issue.priority)
-            self._write(prefix2 + issue.summary)
-            if version.preview:
-                self._write(prefix2 + issue.preview.replace(" ", "\xa0"))
-        self._write()
-        self._write(
-            "Altogether {} issue{}. View on the `issue tracker "
-            "<https://github.com/{}/issues?q=milestone%3A{}>`__.".format(
-                len(issues),
-                "s" if len(issues) != 1 else "",
-                self.repository,
-                version.milestone,
-            )
-        )
-
-    def _write_issue_table_markdown(self, issues, version):
         headers = ["ID", "Type", "Priority", "Summary"]
         if version.preview:
             headers.append("Added")
-        
+
         self._write("| " + " | ".join(headers) + " |")
         self._write("|" + "|".join(["---"] * len(headers)) + "|")
-        
+
         for issue in issues:
             row = [issue.id, issue.type, issue.priority, issue.summary]
             if version.preview:
                 row.append(issue.preview or "")
             self._write("| " + " | ".join(row) + " |")
-        
+
         self._write()
         self._write(
             "Altogether {} issue{}. View on the [issue tracker]"
@@ -215,22 +155,10 @@ class ReleaseNotesGenerator:
         self._write()
         for target in self.default_targets:
             self._write(target)
-        if self.format == "rst":
-            for issue in issues:
-                self._write(f".. _{issue.id}: {issue.url}", link_issues=False)
 
     def _write_header(self, header, level=2):
-        if self.format == "rst":
-            if level > 1:
-                self._write()
-            underline = {1: "=", 2: "=", 3: "-", 4: "~"}[level] * len(header)
-            if level == 1:
-                self._write(underline)
-            self._write(header)
-            self._write(underline, newlines=2)
-        else:  # markdown
-            hashes = "#" * level
-            self._write(f"{hashes} {header}", newlines=2)
+        hashes = "#" * level
+        self._write(f"{hashes} {header}", newlines=2)
 
     def _write_issues_with_label(self, header, issues, version, *labels):
         issues = [
@@ -250,13 +178,14 @@ class ReleaseNotesGenerator:
     def _write(self, message="", newlines=1, link_issues=True):
         message += "\n" * newlines
         if link_issues:
-            if self.format == "rst":
-                message = re.sub(r"(#\d+)", r"`\1`_", message)
-            else:  # markdown
-                message = re.sub(r"(#\d+)", r"[\1](https://github.com/{}/issues/{})".format(
-                    self.repository, r"\1".lstrip("#")
-                ), message)
+            # Replace issue references like #123 with markdown links.
+            message = re.sub(
+                r"(#\d+)",
+                lambda m: f"[{m.group(1)}](https://github.com/{self.repository}/issues/{m.group(1).lstrip('#')})",
+                message,
+            )
         self._output.write(message)
+
 
 @total_ordering
 class Issue:
