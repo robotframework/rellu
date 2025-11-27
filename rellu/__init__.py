@@ -33,13 +33,16 @@ if sys.version_info < (3, 8):
     raise ImportError("Python 3.8 or newer required.")
 
 try:
-    from invoke import __version_info__ as invoke_version
-
-    if invoke_version < (2, 0):
-        raise ImportError
+    # If the '__version__' string exists, we can be sure this is a
+    # version newer than 2.2.1.
+    from invoke import __version__ as invoke_version
 except ImportError:
-    raise ImportError("invoke 2.0 or newer required.")
-
+    try:
+        from invoke import __version_info__ as invoke_version
+        if invoke_version < (2, 0):
+            raise ImportError
+    except ImportError:
+        raise ImportError("invoke 2.0 or newer required.")
 
 from .labels import initialize_labels
 from .releasenotes import ReleaseNotesGenerator, Issue
