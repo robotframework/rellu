@@ -196,7 +196,7 @@ class Issue:
         self,
         issue: GitHubIssue,
         repository: str,
-        type_order: list[str] | None = None,
+        type_order: "list[str] | None" = None,
     ):
         self.id = f"#{issue.number}"
         self.milestone = issue.milestone.title
