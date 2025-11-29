@@ -37,6 +37,8 @@ From release 2.0 onwards Rellu support release note generation only in
 Markdown format. Support for restructured text format is dropped. If you
 want to use restructured text format, install version 1.0.
 
+Many thanks for Welflo for making the markdown support for Rellu.
+
 ## Full list of fixes and enhancements
 
 | ID | Type | Priority | Summary |
