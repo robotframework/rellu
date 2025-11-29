@@ -29,15 +29,6 @@ TYPE_ORDER_LIST = list(string.ascii_lowercase)
 
 
 class ReleaseNotesGenerator:
-    pre_intro = """
-.. default-role:: code
-"""
-    post_intro = """
-.. contents::
-   :depth: 2
-   :local:
-""".strip()
-
     def __init__(
         self,
         repository,
@@ -108,9 +99,7 @@ class ReleaseNotesGenerator:
     def _write_intro(self, version):
         self._write_header(self.title.format(version=version), level=1)
         intro = self.intro.format(version=version, date=time.strftime("%A %B %-d, %Y"))
-        self._write(self.pre_intro)
         self._write(intro, newlines=2)
-        self._write(self.post_intro)
 
     def _write_most_important_enhancements(self, issues, version):
         self._write_issues_with_label(
@@ -138,32 +127,23 @@ class ReleaseNotesGenerator:
 
     def _write_issue_table(self, issues, version):
         self._write_header("Full list of fixes and enhancements")
-        self._write(
-            """
-.. list-table::
-    :header-rows: 1
-
-    * - ID
-      - Type
-      - Priority
-      - Summary
-""".strip()
-        )
-        prefix1 = "    * - "
-        prefix2 = "      - "
+        headers = ["ID", "Type", "Priority", "Summary"]
         if version.preview:
-            self._write("      - Added")
+            headers.append("Added")
+
+        self._write("| " + " | ".join(headers) + " |")
+        self._write("|" + "|".join(["---"] * len(headers)) + "|")
+
         for issue in issues:
-            self._write(prefix1 + issue.id)
-            self._write(prefix2 + issue.type)
-            self._write(prefix2 + issue.priority)
-            self._write(prefix2 + issue.summary)
+            row = [issue.id, issue.type, issue.priority, issue.summary]
             if version.preview:
-                self._write(prefix2 + issue.preview.replace(" ", "\xa0"))
+                row.append(issue.preview or "")
+            self._write("| " + " | ".join(row) + " |")
+
         self._write()
         self._write(
-            "Altogether {} issue{}. View on the `issue tracker "
-            "<https://github.com/{}/issues?q=milestone%3A{}>`__.".format(
+            "Altogether {} issue{}. View on the [issue tracker]"
+            "(https://github.com/{}/issues?q=milestone%3A{}).".format(
                 len(issues),
                 "s" if len(issues) != 1 else "",
                 self.repository,
@@ -175,17 +155,10 @@ class ReleaseNotesGenerator:
         self._write()
         for target in self.default_targets:
             self._write(target)
-        for issue in issues:
-            self._write(f".. _{issue.id}: {issue.url}", link_issues=False)
 
     def _write_header(self, header, level=2):
-        if level > 1:
-            self._write()
-        underline = {1: "=", 2: "=", 3: "-", 4: "~"}[level] * len(header)
-        if level == 1:
-            self._write(underline)
-        self._write(header)
-        self._write(underline, newlines=2)
+        hashes = "#" * level
+        self._write(f"{hashes} {header}", newlines=2)
 
     def _write_issues_with_label(self, header, issues, version, *labels):
         issues = [
@@ -205,7 +178,12 @@ class ReleaseNotesGenerator:
     def _write(self, message="", newlines=1, link_issues=True):
         message += "\n" * newlines
         if link_issues:
-            message = re.sub(r"(#\d+)", r"`\1`_", message)
+            # Replace issue references like #123 with markdown links.
+            message = re.sub(
+                r"(#\d+)",
+                lambda m: f"[{m.group(1)}](https://github.com/{self.repository}/issues/{m.group(1).lstrip('#')})",
+                message,
+            )
         self._output.write(message)
 
 
@@ -218,7 +196,7 @@ class Issue:
         self,
         issue: GitHubIssue,
         repository: str,
-        type_order: "list[str] | None" = None,
+        type_order: list[str] | None = None,
     ):
         self.id = f"#{issue.number}"
         self.milestone = issue.milestone.title
