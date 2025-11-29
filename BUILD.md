@@ -133,8 +133,8 @@ running them.
 4. Add, commit and push:
 
    ```bash
-   git add doc/rellu-$VERSION.rst
-   git commit -m "Release notes for $VERSION" doc/rellu-$VERSION.rst
+   git add doc/rellu-$VERSION.md
+   git commit -m "Release notes for $VERSION" doc/rellu-$VERSION.md
    git push
    ```
 
