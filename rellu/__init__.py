@@ -36,3 +36,5 @@ if sys.version_info < (3, 8):
 from .labels import initialize_labels
 from .releasenotes import ReleaseNotesGenerator, Issue
 from .version import Version
+
+__all__ = ["initialize_labels", "Issue", "ReleaseNotesGenerator", "Version"]

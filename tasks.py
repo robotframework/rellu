@@ -3,8 +3,8 @@ import sys
 
 from invoke import task
 
-from rellu.tasks import clean
-from rellu import initialize_labels, Version, ReleaseNotesGenerator, Issue
+from rellu.tasks import clean  # noqa: F401  (exposed as an Invoke task)
+from rellu import initialize_labels, Version, ReleaseNotesGenerator
 
 
 assert Path.cwd() == Path(__file__).parent

@@ -42,6 +42,6 @@ To be able to **automatically generate release notes**, the project's issue trac
 2.  **Labels** must be configured using the provided utility.
 3.  **Milestones and labels** must be used consistently:
     * Valid issues must have their **type** defined as a label: **`bug`**, **`enhancement`**, or **`task`**. Issues with the `task` type are **not** included in the release notes.
-    * Issues should have their **priority** set using the appropriate **`prio-`** labels.
+    * Issues should have their **priority** set using either the organization level **Priority** issue field or the appropriate **`priority:`** labels. If both are set, the field wins. Field options are mapped to rellu priorities by default as `Urgent` → `critical`, `High` → `high`, `Medium` → `medium` and `Low` → `low`. Use the `priority_mapping` argument of `ReleaseNotesGenerator` to map other options. It extends the default mapping and overrides it for options given in both, for example `priority_mapping={"P0": "critical"}`. Other issue fields, such as **Effort**, are ignored.
     * Issues belonging to a certain milestone should have that **milestone set**.
     * Issues included in certain preview releases should have a **matching label** set (e.g., **`a1`**, **`b2`**, **`rc3`**).
